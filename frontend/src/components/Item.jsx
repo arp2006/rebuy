@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-function Product({ imgLink, product, price, location }) {
+function Item({ imgLink, product, price, location }) {  
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-3 pb-3 bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+    <div className="flex flex-col gap-3 pb-3 bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300" onClick={()=>navigate("/product")}>
       <div
         className="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
         data-alt={`Image of ${product}`}
@@ -17,5 +19,5 @@ function Product({ imgLink, product, price, location }) {
   );
 }
 
-export default Product;
+export default Item;
 
