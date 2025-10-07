@@ -5,7 +5,7 @@ function Header() {
   const navigate = useNavigate();
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7eff3] px-10 py-3 bg-white">
-      <div className="flex items-center gap-4 text-[#0d171b]" onClick={() => navigate("/")}>
+      <div className="cursor-pointer flex items-center gap-4 text-[#0d171b]" onClick={() => navigate("/")}>
         <div className="size-4">
           <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <path

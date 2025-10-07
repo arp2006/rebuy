@@ -6,7 +6,6 @@ import Register from './pages/Register';
 import Product from "./pages/Product";
 import Create from "./pages/Create";
 import Sidebar from './components/Sidebar'
-// import AnotherPage from './pages/AnotherPage'; // example: add more pages
 
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/product" element={<Product />} />
           <Route path="/create" element={<Create />} />
-          {/* Add more routes here */}
         </Route>
       </Routes>
     </BrowserRouter>

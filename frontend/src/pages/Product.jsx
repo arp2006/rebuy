@@ -104,10 +104,10 @@ function Product() {
                 <span className="material-symbols-outlined">chat_bubble</span>
                 <span className="truncate">Chat with Seller</span>
               </button>
-              <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-slate-200 text-slate-900 text-base font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 transition-colors">
+              {/* <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-slate-200 text-slate-900 text-base font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 transition-colors">
                 <span className="material-symbols-outlined">favorite_border</span>
                 <span className="truncate">Add to Favorites</span>
-              </button>
+              </button> */}
             </div>
           </div>
 
