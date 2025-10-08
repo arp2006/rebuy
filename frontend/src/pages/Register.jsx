@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { setLoggedIn } = useContext(AuthContext);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -13,9 +14,11 @@ function Register() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -31,19 +34,19 @@ function Register() {
         body: JSON.stringify(form)
       });
       const data = await response.json();
-      console.log(data);
       if (!response.ok) {
         setError(data.error || 'Registration failed');
       } else {
+        localStorage.setItem('token', data.token);
+        setLoggedIn(true);
         navigate("/");
       }
-      console.log(form);      
-    } 
-    catch (err) {
+    } catch (err) {
       setError('Failed to register: ' + err.message);
     }
     setLoading(false);
   };
+
   return (
     <div
       className="relative flex h-auto min-h-screen w-full flex-col bg-slate-50 group/design-root overflow-x-hidden"

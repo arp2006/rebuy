@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Product from "./pages/Product";
 import Create from "./pages/Create";
+import Account from "./pages/Account";
 import Sidebar from './components/Sidebar'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/product" element={<Product />} />
           <Route path="/create" element={<Create />} />
+          <Route path="/account" element={<Account />} />
         </Route>
       </Routes>
     </BrowserRouter>

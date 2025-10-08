@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { AuthContext } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Create() {
+  
+
   return (
     <div className="flex flex-1 justify-center py-5">
       <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
@@ -86,7 +90,7 @@ function Create() {
                   Price
                 </p>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#4c809a]">$</span>
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#4c809a]">₹</span>
                   <input
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#4385a5] h-14 placeholder:text-[#4c809a] pl-8 p-[15px] text-base font-normal leading-normal"
                     placeholder="0.00"
@@ -121,7 +125,7 @@ function Create() {
                 <div className="relative">
                   <input
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#4385a5] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal pr-10"
-                    placeholder="e.g., San Francisco, CA"
+                    placeholder="e.g., Mumbai"
                     value=""
                   />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c809a]">

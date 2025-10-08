@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { setLoggedIn } = useContext(AuthContext);
   const [form, setForm] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value})
-  }
+    setForm({...form, [e.target.name]: e.target.value});
+  };
+
   const handleSubmit = async (e) => {
-    console.log(form);
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -27,13 +30,17 @@ function Login() {
       if (!response.ok) {
         setError(data.error || 'Login failed');
       } else {
-        navigate('/'); 
+        localStorage.setItem('token', data.token);
+        setLoggedIn(true);
+        navigate('/');
       }
     } catch (err) {
       setError('Failed to login: ' + err.message);
     }
     setLoading(false);
   };
+
+
   return (
     <div
       className="relative flex h-auto min-h-screen w-full flex-col bg-slate-50 group/design-root overflow-x-hidden"
