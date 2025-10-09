@@ -1,56 +1,93 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function Create() {
   const navigate = useNavigate();
   const { setLoggedIn } = useContext(AuthContext);
-  const token = localStorage.getItem('token');
   const id = localStorage.getItem('userId');
-  // console.log(id);
+
   const [form, setForm] = useState({
     title: '',
     desc: '',
     price: '',
     location: '',
     category: '',
-    uid: id
+    uid: id,
   });
   const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleCategoryChange = (e) => {
     setForm({ ...form, category: e.target.value });
   };
+
   const handleImageChange = (e) => {
-    setImages([...e.target.files].slice(0, 5));
+    const files = [...e.target.files].slice(0, 5);
+    setImages(files);
+
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
+
+  // Cleanup preview URLs
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imagePreviews]);
+
+  const uploadImages = async () => {
+    if (images.length === 0) return [];
+
+    const formData = new FormData();
+    images.forEach(img => formData.append('images', img));
+
+    const res = await fetch('http://localhost:3000/api/upload-images', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error('Image upload failed');
+    }
+    const data = await res.json();
+    return data.imageUrls;
+  };
+
   const handleSubmit = async (e) => {
-    console.log(form);
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
+      const imageUrls = await uploadImages();
+
+      const payload = { ...form, imageUrls, uid: id };
+
       const response = await fetch('http://localhost:3000/api/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload),
       });
+
       const data = await response.json();
       if (!response.ok) {
         setError(data.error || 'Could not create listing');
       } else {
-        // setError(data.error || 'Listing created');
         navigate('/success');
       }
-    } catch {
-      setError('Network error');
+    } catch (err) {
+      setError(err.message || 'Network error');
     }
     setLoading(false);
   };
+
   return (
     <div className="flex flex-1 justify-center py-5">
       <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
@@ -82,6 +119,7 @@ function Create() {
                     name="title"
                   />
                 </label>
+
                 {/* Description */}
                 <label className="flex flex-col min-w-40 flex-1">
                   <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
@@ -96,6 +134,7 @@ function Create() {
                   />
                 </label>
               </div>
+
               <div className="flex flex-col space-y-6">
                 {/* Upload Images */}
                 <label className="flex flex-col min-w-40 flex-1">
@@ -107,7 +146,7 @@ function Create() {
                       upload_file
                     </span>
                     <p className="mt-2 text-sm text-[#4c809a]">
-                      Drag & drop files here or{" "}
+                      Drag & drop all files here at once or {" "}
                       <span className="font-semibold text-[#0d171b] cursor-pointer">
                         browse
                       </span>
@@ -120,18 +159,17 @@ function Create() {
                       multiple
                       type="file"
                       accept="image/*"
-                    // onChange={handleImageChange}
+                      onChange={handleImageChange}
                     />
                   </div>
                   <div className="mt-4 grid grid-cols-3 gap-4">
-                    {images.map((img, i) => (
+                    {imagePreviews.map((src, i) => (
                       <div className="relative group" key={i}>
                         <img
                           className="w-full h-24 object-cover rounded-lg"
                           alt={`Preview ${i + 1}`}
-                          src={URL.createObjectURL(img)}
+                          src={src}
                         />
-                        {/* Remove preview logic if desired */}
                       </div>
                     ))}
                   </div>
@@ -156,6 +194,7 @@ function Create() {
                   />
                 </div>
               </label>
+
               {/* Category */}
               <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
@@ -180,7 +219,8 @@ function Create() {
                   </span>
                 </div>
               </label>
-              {/* location */}
+
+              {/* Location */}
               <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                   Location
@@ -204,11 +244,18 @@ function Create() {
             {error && <div className="text-red-600 font-semibold">{error}</div>}
 
             <div className="flex justify-end gap-4 mt-12 pt-6 border-t border-[#e7eff3]">
-              <button type="button" className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#4c809a] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#e7eff3]">
+              <button
+                type="button"
+                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#4c809a] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#e7eff3]"
+              >
                 Cancel
               </button>
-              <button type="submit" disabled={loading} className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#0d171b] text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#2c3e44]">
-                {loading ? 'Posting...' : 'Post Listing'}
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#0d171b] text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#2c3e44]"
+              >
+                {loading ? "Posting..." : "Post Listing"}
               </button>
             </div>
           </form>

@@ -4,6 +4,9 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import cloudinary from 'cloudinary';
+import multer from 'multer';
+import fs from 'fs';
 
 const port = 3000;
 
@@ -11,6 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 dotenv.config();
+const upload = multer({ dest: 'temp/' }); 
 
 const db = new pg.Client({
   user: "postgres",
@@ -21,14 +25,11 @@ const db = new pg.Client({
 });
 db.connect();
 
-/*
-cloudinary.config({
-  cloud_name: 'ReDeal',
+cloudinary.v2.config({
+  cloud_name: 'dpw1mj4zg',
   api_key: '864543138334274',
   api_secret: 'vTCiWElpI42wvCPj3d_QCyqaKnA',
 });
-*/
-
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -55,20 +56,42 @@ app.get('/api/profile', verifyToken, async (req, res) => {
   }
 });
 
-app.post('/api/create', async (req,res) => {
-  try{
-    const {title, desc, price, location, category, uid} = req.body;
-    if (!title || !desc || !price || !location || !category || !uid) {
-      return res.status(400).json({ error: "Missing required fields" });
+app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
+  try {
+    const uploadedUrls = [];
+    for (const file of req.files) {
+      const result = await cloudinary.v2.uploader.upload(file.path, {
+        folder: 'marketplace_items',
+        use_filename: true,
+      });
+      uploadedUrls.push(result.secure_url);
+      fs.unlinkSync(file.path);
     }
-    const getCategory = await db.query('SELECT id FROM categories WHERE name = $1;',[category]);
+    res.status(200).json({ imageUrls: uploadedUrls });
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Image upload failed' });
+  }
+});
+
+app.post('/api/create', async (req,res) => {
+  try {
+    const {title, desc, price, location, category, uid, imageUrls} = req.body;
+    if (!title || !desc || !price || !location || !category || !uid || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+      return res.status(400).json({ error: "Missing required fields or no images uploaded" });
+    }
+    const getCategory = await db.query('SELECT id FROM categories WHERE name = $1;', [category]);
     if (getCategory.rows.length === 0) {
       return res.status(400).json({ error: "Category not found" });
     }
     const category_id = getCategory.rows[0].id;
-    await db.query('INSERT INTO items(title, description, price, location, category_id, seller_id) VALUES($1, $2, $3, $4, $5, $6);',[title, desc, price, location, category_id, uid]);
+    await db.query(
+      'INSERT INTO items(title, description, price, location, category_id, seller_id, images) VALUES($1, $2, $3, $4, $5, $6, $7);',
+      [title, desc, price, location, category_id, uid, imageUrls]
+    );
     res.status(201).json({ message: "Listing created successfully" });
-  }
+  } 
   catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create listing" });
@@ -142,5 +165,3 @@ app.post('/api/register', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-

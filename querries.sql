@@ -16,6 +16,7 @@ CREATE TABLE items (
   location VARCHAR(100),
   category_id INTEGER REFERENCES categories(id),
   seller_id INTEGER REFERENCES users(id),
+  images TEXT[] NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
