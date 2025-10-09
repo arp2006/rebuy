@@ -56,6 +56,23 @@ app.get('/api/profile', verifyToken, async (req, res) => {
   }
 });
 
+app.get("/api/categories", async (req,res) => {
+  const categories = await db.query('SELECT name FROM categories;');
+  res.json(categories.rows);
+});
+
+app.post("/api/listings", async (req, res) => {
+  const { uid } = req.body;
+  try {
+    const posts = await db.query('SELECT * FROM items WHERE seller_id != $1;', [uid]);
+    res.json(posts.rows);
+  }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
     const uploadedUrls = [];
@@ -96,11 +113,6 @@ app.post('/api/create', async (req,res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to create listing" });
   }
-});
-
-app.get("/api/categories", async (req,res) => {
-  const categories = await db.query('SELECT name FROM categories;');
-  res.json(categories.rows);
 });
 
 app.post('/api/login', async (req, res) => {

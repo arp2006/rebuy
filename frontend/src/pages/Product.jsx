@@ -98,7 +98,7 @@ function Product() {
         {/* Sidebar or related content on right */}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white p-6 rounded-lg border border-slate-200">
-            <h2 className="text-[#0d171b] tracking-light text-[36px] font-bold leading-tight">$750</h2>
+            <h2 className="text-[#0d171b] tracking-light text-[36px] font-bold leading-tight"> ₹750</h2>
             <div className="mt-4 flex flex-col gap-3">
               <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-[#13a4ec] text-slate-50 text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#0b8acb] transition-colors">
                 <span className="material-symbols-outlined">chat_bubble</span>
@@ -114,21 +114,9 @@ function Product() {
           <div className="bg-white p-6 rounded-lg border border-slate-200">
             <h3 className="text-[#0d171b] text-lg font-bold">Seller Information</h3>
             <div className="mt-4 flex items-center gap-4">
-              <img
-                alt="Seller's avatar image"
-                className="w-14 h-14 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC53BfFBWotDxPNmcG4C3JQbYgwNOFVdLhLklQVyX3Plw2CjZsFe2eDvDVOH9MPL6ESRgFvIU839PXX2sJUZEoJ8ro3I2JJgJaOMdeYYaoRbhxmTVtDR93L9nfzv05t6dBFTo26Q1UT2-inRNoDlHTP6jhk4sIDmuZOw9R9PSw2F_EnOw9hivZgLOqYV_LoSspUqgI7z_P7w874R-NJzpSM6NNdDLcPqk-kznOPUh2I-NUVUB07i9eFBAfpkT30gmiAN5Av5A2Icxs"
-              />
+              
               <div>
                 <p className="font-bold text-[#0d171b]">John D.</p>
-                <div className="flex items-center gap-1 text-yellow-500">
-                  <span className="material-symbols-outlined text-base">star</span>
-                  <span className="material-symbols-outlined text-base">star</span>
-                  <span className="material-symbols-outlined text-base">star</span>
-                  <span className="material-symbols-outlined text-base">star</span>
-                  <span className="material-symbols-outlined text-base">star_half</span>
-                  <span className="text-slate-500 text-sm font-medium ml-1">(122 reviews)</span>
-                </div>
               </div>
             </div>
             <a className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium" href="#">

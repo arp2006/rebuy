@@ -13,7 +13,7 @@ function Create() {
     price: '',
     location: '',
     category: '',
-    uid: id,
+    uid: id
   });
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -36,7 +36,6 @@ function Create() {
     setImagePreviews(previews);
   };
 
-  // Cleanup preview URLs
   useEffect(() => {
     return () => {
       imagePreviews.forEach(url => URL.revokeObjectURL(url));
@@ -106,7 +105,6 @@ function Create() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
-                {/* Product Title */}
                 <label className="flex flex-col min-w-40 flex-1">
                   <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                     Product Title
@@ -120,7 +118,6 @@ function Create() {
                   />
                 </label>
 
-                {/* Description */}
                 <label className="flex flex-col min-w-40 flex-1">
                   <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                     Description
@@ -136,7 +133,6 @@ function Create() {
               </div>
 
               <div className="flex flex-col space-y-6">
-                {/* Upload Images */}
                 <label className="flex flex-col min-w-40 flex-1">
                   <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                     Upload Images
@@ -208,11 +204,14 @@ function Create() {
                     name="category"
                   >
                     <option disabled value="">Select a category</option>
-                    <option>Clothing</option>
                     <option>Electronics</option>
-                    <option>Furniture</option>
                     <option>Books</option>
-                    <option>Other</option>
+                    <option>Games</option>
+                    <option>Furniture</option>
+                    <option>Toys</option>
+                    <option>Apparel</option>
+                    <option>Musical instruments</option>
+                    <option>Shoes</option>
                   </select>
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c809a]">
                     expand_more

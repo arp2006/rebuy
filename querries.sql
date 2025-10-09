@@ -1,7 +1,7 @@
 DROP TABLE users, items, archive;
 
 CREATE TABLE users (
-  id INT SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
