@@ -6,7 +6,8 @@ import Register from './pages/Register';
 import Product from "./pages/Product";
 import Create from "./pages/Create";
 import Account from "./pages/Account";
-import Sidebar from './components/Sidebar'
+import Success from "./pages/Success";
+import Sidebar from './components/Sidebar';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/product" element={<Product />} />
           <Route path="/create" element={<Create />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/success" element={<Success />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -29,8 +29,10 @@ function Login() {
       const data = await response.json();
       if (!response.ok) {
         setError(data.error || 'Login failed');
-      } else {
+      } 
+      else {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.user.id);
         setLoggedIn(true);
         navigate('/');
       }

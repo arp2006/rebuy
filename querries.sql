@@ -1,7 +1,7 @@
 DROP TABLE users, items, archive;
 
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
+  id INT SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE items (
 );
 
 CREATE TABLE archive (
-  id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   title VARCHAR(150) NOT NULL,
   description TEXT,
   price NUMERIC(10,2) NOT NULL,
@@ -38,14 +38,14 @@ CREATE TABLE categories (
 
 INSERT INTO categories (name) 
 VALUES 
-  ('electronics'),
-  ('books'),
-  ('games'),
-  ('furniture'),
-  ('toys'),
-  ('apparel'),
-  ('musical instruments'),
-  ('shoes');
+  ('Electronics'),
+  ('Books'),
+  ('Games'),
+  ('Furniture'),
+  ('Toys'),
+  ('Apparel'),
+  ('Musical instruments'),
+  ('Shoes');
 
 
   -- ask jignesh sir --`

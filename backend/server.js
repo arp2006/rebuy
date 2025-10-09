@@ -21,6 +21,15 @@ const db = new pg.Client({
 });
 db.connect();
 
+/*
+cloudinary.config({
+  cloud_name: 'ReDeal',
+  api_key: '864543138334274',
+  api_secret: 'vTCiWElpI42wvCPj3d_QCyqaKnA',
+});
+*/
+
+
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
@@ -38,7 +47,7 @@ function verifyToken(req, res, next) {
 
 app.get('/api/profile', verifyToken, async (req, res) => {
   try {
-    const result = await db.query('SELECT id, name, email FROM users WHERE id = $1', [req.userId]);
+    const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
     res.json(result.rows[0]);
   } catch (err) {
@@ -46,9 +55,28 @@ app.get('/api/profile', verifyToken, async (req, res) => {
   }
 });
 
+app.post('/api/create', async (req,res) => {
+  try{
+    const {title, desc, price, location, category, uid} = req.body;
+    if (!title || !desc || !price || !location || !category || !uid) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    const getCategory = await db.query('SELECT id FROM categories WHERE name = $1;',[category]);
+    if (getCategory.rows.length === 0) {
+      return res.status(400).json({ error: "Category not found" });
+    }
+    const category_id = getCategory.rows[0].id;
+    await db.query('INSERT INTO items(title, description, price, location, category_id, seller_id) VALUES($1, $2, $3, $4, $5, $6);',[title, desc, price, location, category_id, uid]);
+    res.status(201).json({ message: "Listing created successfully" });
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create listing" });
+  }
+});
 
 app.get("/api/categories", async (req,res) => {
-  const categories = await db.query('SELECT name FROM categories');
+  const categories = await db.query('SELECT name FROM categories;');
   res.json(categories.rows);
 });
 
@@ -58,7 +86,7 @@ app.post('/api/login', async (req, res) => {
     return res.status(400).json({error: 'Missing required fields'});
   }
   try {
-    const existing = await db.query('SELECT id, name, password_hash FROM users WHERE email = $1', [email]);
+    const existing = await db.query('SELECT id, name, password_hash FROM users WHERE email = $1;', [email]);
     if (existing.rows.length === 0) {
       return res.status(404).json({ error: 'Account with given email does not exist' });
     }
@@ -89,13 +117,13 @@ app.post('/api/register', async (req, res) => {
     return res.status(400).json({error: 'Passwords do not match'});
   }
   try {
-    const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+    const existing = await db.query('SELECT id FROM users WHERE email = $1;', [email]);
     if (existing.rows.length > 0) {
       return res.status(409).json({error: 'Email is already registered'});
     }  
     const hashedPass = await bcrypt.hash(password, 10);
     const result = await db.query(
-      'INSERT INTO users(name,email,password_hash,region) VALUES($1, $2, $3, $4) RETURNING id, name, email',
+      'INSERT INTO users(name,email,password_hash,region) VALUES($1, $2, $3, $4) RETURNING id, name, email;',
       [name, email, hashedPass, region || null]
     );
     const userData = result.rows[0];
@@ -114,3 +142,5 @@ app.post('/api/register', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+

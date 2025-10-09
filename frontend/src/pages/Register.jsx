@@ -38,6 +38,7 @@ function Register() {
         setError(data.error || 'Registration failed');
       } else {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.user.id);
         setLoggedIn(true);
         navigate("/");
       }
