@@ -4,7 +4,7 @@ import Item from "../components/Item";
 function Home() {
   const id = localStorage.getItem('userId');
   const [posts, setPosts] = useState([]);
-
+  console.log(id);
   const getPosts = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/listings', {
@@ -16,16 +16,16 @@ function Home() {
       const postsData = await response.json();
       setPosts(postsData); // <-- Update state here
       // Optional: log first image of the first post
-      if (postsData.length > 0) {
-        console.log(postsData[0].images[0]);
-      }
+      // if (postsData.length > 0) {
+      //   console.log(postsData[0].images[0]);
+      // }
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    getPosts();
+    getPosts(); 
   }, []);
 
   return (
@@ -37,7 +37,7 @@ function Home() {
           posts.map(post => (
             <Item
               key={post.id}
-              imgLink={(post.images && post.images.length > 0 )&& post.images[0] }
+              imgLink={(post.images && post.images.length > 0) && post.images[0]}
               product={post.title}
               price={`₹${post.price}`}
               location={post.location}
@@ -92,8 +92,8 @@ export default Home;
         </div>
       </div> */}
 
-      //page nav
-      {/* <div className="flex items-center justify-center p-4">
+//page nav
+{/* <div className="flex items-center justify-center p-4">
         <a className="flex size-10 items-center justify-center" href="#">
           <span className="material-symbols-outlined text-[#0d171b]">
             chevron_left
