@@ -73,6 +73,18 @@ app.post("/api/listings", async (req, res) => {
   }
 });
 
+app.post("/api/account-listings", async (req, res) => {
+  const { uid } = req.body;
+  try {
+    const posts = await db.query('SELECT * FROM items WHERE seller_id = $1;', [uid]);
+    res.json(posts.rows);
+  }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
     const uploadedUrls = [];

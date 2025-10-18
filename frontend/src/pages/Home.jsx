@@ -4,7 +4,7 @@ import Item from "../components/Item";
 function Home() {
   const id = localStorage.getItem('userId');
   const [posts, setPosts] = useState([]);
-  console.log(id);
+  // console.log(id);
   const getPosts = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/listings', {
@@ -14,11 +14,7 @@ function Home() {
       });
       if (!response.ok) throw new Error('Failed to fetch posts');
       const postsData = await response.json();
-      setPosts(postsData); // <-- Update state here
-      // Optional: log first image of the first post
-      // if (postsData.length > 0) {
-      //   console.log(postsData[0].images[0]);
-      // }
+      setPosts(postsData);
     } catch (error) {
       console.error(error);
     }
