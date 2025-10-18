@@ -1,6 +1,6 @@
 import React from "react";
 
-function Product() {
+function Product(props) {
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-6">
