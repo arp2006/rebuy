@@ -49,6 +49,6 @@ VALUES
   ('Shoes');
 
 
-  -- ask jignesh sir --`
+  -- ask jignesh sir --
   CREATE INDEX idx_items_category_id ON items(category_id);
   CREATE INDEX idx_items_seller_id ON items(seller_id);`

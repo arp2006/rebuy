@@ -33,6 +33,7 @@ function Home() {
           posts.map(post => (
             <Item
               key={post.id}
+              id={post.id}
               imgLink={(post.images && post.images.length > 0) && post.images[0]}
               product={post.title}
               price={`₹${post.price}`}

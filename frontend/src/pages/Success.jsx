@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 function Success() {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(5);
+  const id = localStorage.getItem('userId');
 
   useEffect(() => {
     if (countdown > 0) {
@@ -13,6 +14,12 @@ function Success() {
       navigate("/");
     }
   }, [countdown, navigate]);
+
+    useEffect(()=>{
+      if (id==8) {
+        navigate("/", { replace: true });
+      }
+    }, [ navigate]);
 
   return (
     <div

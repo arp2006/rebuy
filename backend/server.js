@@ -85,6 +85,25 @@ app.post("/api/account-listings", async (req, res) => {
   }
 });
 
+app.post("/api/info", async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: "Missing 'id' in request body" });
+  }
+  try {
+    const post = await db.query('SELECT * FROM items JOIN users ON items.seller_id = users.id WHERE items.id = $1;', [id]);
+    if (post.rows.length === 0) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    res.json(post.rows[0]);
+  }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
     const uploadedUrls = [];

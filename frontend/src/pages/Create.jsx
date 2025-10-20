@@ -6,7 +6,6 @@ function Create() {
   const navigate = useNavigate();
   const { setLoggedIn } = useContext(AuthContext);
   const id = localStorage.getItem('userId');
-
   const [form, setForm] = useState({
     title: '',
     desc: '',
@@ -41,6 +40,12 @@ function Create() {
       imagePreviews.forEach(url => URL.revokeObjectURL(url));
     };
   }, [imagePreviews]);
+
+  useEffect(()=>{
+    if (id==8) {
+      navigate("/login", { replace: true });
+    }
+  }, [ navigate]);
 
   const uploadImages = async () => {
     if (images.length === 0) return [];

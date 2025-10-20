@@ -27,10 +27,16 @@ function Account() {
   useEffect(() => {
     getPosts();
   }, []);
+  
+  useEffect(()=>{
+    if (id==8) {
+      navigate("/login", { replace: true });
+    }
+  }, [ navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.setItem('userId', data.user.id);
+    localStorage.setItem('userId', 8);
     setLoggedIn(false);
     navigate('/login');
   };
