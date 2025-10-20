@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const id = localStorage.getItem('userId');
   const { setLoggedIn } = useContext(AuthContext);
   const [form, setForm] = useState({
     email: '',
@@ -42,6 +43,10 @@ function Login() {
     setLoading(false);
   };
 
+  useEffect(()=>{
+    if(id!=8)
+      navigate("/", { replace: true });
+  }, [navigate]);
 
   return (
     <div

@@ -71,9 +71,7 @@ function Create() {
     setLoading(true);
     try {
       const imageUrls = await uploadImages();
-
       const payload = { ...form, imageUrls, uid: id };
-
       const response = await fetch('http://localhost:3000/api/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
