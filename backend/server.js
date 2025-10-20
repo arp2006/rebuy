@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 dotenv.config();
-const upload = multer({ dest: 'temp/' }); 
+const upload = multer({ dest: 'temp/' });
 
 const db = new pg.Client({
   user: "postgres",
@@ -33,16 +33,33 @@ cloudinary.v2.config({
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+  if (!authHeader) {
+    // No token—set user to fallback user 8
+    req.userId = 8;
+    return next();
+  }
 
   const token = authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Malformed token' });
+  if (!token) {
+    // Malformed token—set user to fallback user 8
+    req.userId = 8;
+    return next();
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
-    req.userId = decoded.userId;
-    req.email = decoded.email;
-    next();
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        // Token expired—set fallback user 8
+        req.userId = 8;
+        next();
+      } else {
+        return res.status(403).json({ error: 'Invalid token' });
+      }
+    } else {
+      req.userId = decoded.userId;
+      req.email = decoded.email;
+      next();
+    }
   });
 }
 
@@ -56,7 +73,7 @@ app.get('/api/profile', verifyToken, async (req, res) => {
   }
 });
 
-app.get("/api/categories", async (req,res) => {
+app.get("/api/categories", async (req, res) => {
   const categories = await db.query('SELECT name FROM categories;');
   res.json(categories.rows);
 });
@@ -82,6 +99,42 @@ app.post("/api/account-listings", async (req, res) => {
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post("/api/archive", async (req, res) => {
+  const { uid } = req.body;
+  try {
+    const posts = await db.query('SELECT * FROM archive WHERE seller_id = $1;', [uid]);
+    res.json(posts.rows);
+  }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post("/api/deletelisting", async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: 'Missing item id' });
+  }
+  try {
+    await db.query('BEGIN;');
+    await db.query(`
+      INSERT INTO archive (id, title, description, price, location, category_id, seller_id, images, created_at, removed_at)
+      SELECT id, title, description, price, location, category_id, seller_id, images, created_at, NOW()
+      FROM items
+      WHERE id = $1;
+    `, [id]);
+    await db.query('DELETE FROM items WHERE id = $1;', [id]);
+    await db.query('COMMIT;');
+    res.status(200).json({ message: 'Item successfully archived and deleted' });
+  }
+  catch (err) {
+    await db.query('ROLLBACK;');
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete and archive item' });
   }
 });
 
@@ -123,9 +176,9 @@ app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   }
 });
 
-app.post('/api/create', async (req,res) => {
+app.post('/api/create', async (req, res) => {
   try {
-    const {title, desc, price, location, category, uid, imageUrls} = req.body;
+    const { title, desc, price, location, category, uid, imageUrls } = req.body;
     if (!title || !desc || !price || !location || !category || !uid || !Array.isArray(imageUrls) || imageUrls.length === 0) {
       return res.status(400).json({ error: "Missing required fields or no images uploaded" });
     }
@@ -139,7 +192,7 @@ app.post('/api/create', async (req,res) => {
       [title, desc, price, location, category_id, uid, imageUrls]
     );
     res.status(201).json({ message: "Listing created successfully" });
-  } 
+  }
   catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create listing" });
@@ -148,8 +201,8 @@ app.post('/api/create', async (req,res) => {
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  if(!email || !password){
-    return res.status(400).json({error: 'Missing required fields'});
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
     const existing = await db.query('SELECT id, name, password_hash FROM users WHERE email = $1;', [email]);
@@ -177,16 +230,16 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/register', async (req, res) => {
   const { name, email, password, repeatPassword, region } = req.body;
   if (!name || !email || !password || !repeatPassword) {
-    return res.status(400).json({error: 'Missing required fields'});
+    return res.status(400).json({ error: 'Missing required fields' });
   }
   if (password !== repeatPassword) {
-    return res.status(400).json({error: 'Passwords do not match'});
+    return res.status(400).json({ error: 'Passwords do not match' });
   }
   try {
     const existing = await db.query('SELECT id FROM users WHERE email = $1;', [email]);
     if (existing.rows.length > 0) {
-      return res.status(409).json({error: 'Email is already registered'});
-    }  
+      return res.status(409).json({ error: 'Email is already registered' });
+    }
     const hashedPass = await bcrypt.hash(password, 10);
     const result = await db.query(
       'INSERT INTO users(name,email,password_hash,region) VALUES($1, $2, $3, $4) RETURNING id, name, email;',
@@ -197,10 +250,10 @@ app.post('/api/register', async (req, res) => {
       expiresIn: '1h',
     });
     res.status(201).json({ user: userData, token });
-  } 
+  }
   catch (err) {
     console.error(err);
-    res.status(500).json({error:'Internal server error'});
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

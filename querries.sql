@@ -29,6 +29,7 @@ CREATE TABLE archive (
   category_id INTEGER REFERENCES categories(id),
   seller_id INTEGER REFERENCES users(id),
   created_at TIMESTAMP DEFAULT NOW(),
+  images TEXT[] NOT NULL,
   removed_at TIMESTAMP DEFAULT NOW()
 );
 
