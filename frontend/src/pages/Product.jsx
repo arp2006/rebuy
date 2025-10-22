@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Carousel from "../components/Carousel";
 
 function Product() {
@@ -19,7 +19,6 @@ function Product() {
     setForm({ ...form, [e.target.name]: e.target.value });
     console.log(form);
   };
-  console.log(id);
   
   const getInfo = async () => {
     try {
@@ -50,14 +49,14 @@ function Product() {
         setError(data.error || 'Wrong Passowrd');
       }
       else {
-        const response = await fetch('http://localhost:3000/api/deletelisting',{
+        const response = await fetch('http://localhost:3000/api/deletelisting', {
           method: "POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id }),
         });
         if (response.ok) {
-          setSuccess( 'Post deleted, redirecting to your account');
-          setTimeout(()=>{
+          setSuccess('Post deleted, redirecting to your account');
+          setTimeout(() => {
             navigate('/account');
           }, 1500);
         }
@@ -187,7 +186,8 @@ function Product() {
                     type="submit"
                   >
                     Delete
-                  </button></>
+                  </button>
+                </>
               )}
             </div>
             {error && <p className="text-red-600 mt-[7px] text-center">{error}</p>}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Home from './pages/Home';
+import Search from './pages/Search';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Product from "./pages/Product";
@@ -13,12 +14,14 @@ import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Tos from './pages/Tos';
 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<><Sidebar /><Home /></>} />
+          <Route path="/search" element={<><Sidebar /><Search /></>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<Product />} />

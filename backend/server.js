@@ -1,5 +1,5 @@
 import express from "express";
-import pg from "pg";
+import { Pool } from "pg";
 import cors from "cors";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
@@ -16,7 +16,7 @@ app.use(cors());
 dotenv.config();
 const upload = multer({ dest: 'temp/' });
 
-const db = new pg.Client({
+const db = new Pool({
   user: "postgres",
   host: "localhost",
   database: "ReDeal",
@@ -34,41 +34,84 @@ cloudinary.v2.config({
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
-    // No token—set user to fallback user 8
     req.userId = 8;
+    console.log("No header, defaulting to guest");
     return next();
   }
 
   const token = authHeader.split(' ')[1];
   if (!token) {
-    // Malformed token—set user to fallback user 8
     req.userId = 8;
+    console.log("No token found, defaulting to guest");
     return next();
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
+      console.log("JWT error:", err);
       if (err.name === "TokenExpiredError") {
-        // Token expired—set fallback user 8
         req.userId = 8;
-        next();
-      } else {
-        return res.status(403).json({ error: 'Invalid token' });
+        console.log("Expired token, guest mode");
+        return next();
       }
-    } else {
-      req.userId = decoded.userId;
-      req.email = decoded.email;
-      next();
+      return res.status(403).json({ error: 'Invalid token' });
     }
+    req.userId = decoded.userId;
+    req.email = decoded.email;
+    next();
   });
 }
+
+
+// function verifyToken(req, res, next) {
+//   const authHeader = req.headers['authorization'];
+//   if (!authHeader) {
+//     req.userId = 8;
+//     return next();
+//   }
+
+//   const token = authHeader.split(' ')[1];
+//   if (!token) {
+//     req.userId = 8;
+//     return next();
+//   }
+
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//     if (err) {
+//       if (err.name === "TokenExpiredError") {
+//         req.userId = 8;
+//         next();
+//       } else {
+//         return res.status(403).json({ error: 'Invalid token' });
+//       }
+//     } else {
+//       req.userId = decoded.userId;
+//       req.email = decoded.email;
+//       next();
+//     }
+//   });
+// }
+
+// function verifyToken(req, res, next) {
+//   const authHeader = req.headers['authorization'];
+//   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+//   const token = authHeader.split(' ')[1];
+//   if (!token) return res.status(401).json({ error: 'Malformed token' });
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//     if (err) return res.status(403).json({ error: 'Invalid token' });
+//     req.userId = decoded.userId;
+//     req.email = decoded.email;
+//     next();
+//   });
+// }
 
 app.get('/api/profile', verifyToken, async (req, res) => {
   try {
     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
     res.json(result.rows[0]);
-  } catch (err) {
+  } 
+  catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -84,6 +127,21 @@ app.post("/api/listings", async (req, res) => {
     const posts = await db.query('SELECT * FROM items WHERE seller_id != $1;', [uid]);
     res.json(posts.rows);
   }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post("/api/search", async (req, res) => {
+  const { uid, searchQuery } = req.body;
+  try {
+    const posts = await db.query(
+      `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%');`,
+      [uid, searchQuery]
+    );
+    res.json(posts.rows);
+  } 
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -218,7 +276,6 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
-
     res.status(200).json({ user: userData, token });
   }
   catch (err) {
@@ -256,7 +313,6 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

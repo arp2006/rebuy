@@ -1,13 +1,20 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Logo from '../assets/logo.svg';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 function Header() {
   const { loggedIn, setLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
-  // Optional: verify JWT with backend
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/search?query=${encodeURIComponent(search.trim())}`);
+    }
+  };
+
   useEffect(() => {
     async function checkLogin() {
       const token = localStorage.getItem("token");
@@ -21,14 +28,13 @@ function Header() {
         });
         setLoggedIn(response.ok);
         if (!response.ok) localStorage.removeItem("token");
-      } catch {
+      }
+      catch {
         setLoggedIn(false);
         localStorage.removeItem("token");
       }
     }
     checkLogin();
-    // Only runs on first load or if you want to add as dependency: [setLoggedIn]
-    // eslint-disable-next-line
   }, []);
 
   return (
@@ -42,7 +48,7 @@ function Header() {
         </h2>
       </div>
       <div className="flex flex-1 items-center justify-center px-8">
-        <label className="flex flex-col min-w-40 h-10 w-full max-w-[480px]">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col min-w-40 h-10 w-full max-w-[480px]">
           <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
             <div className="text-[#4c809a] flex border border-[#cfdfe7] bg-slate-50 items-center justify-center pl-3 rounded-l-lg border-r-0">
               <span className="material-symbols-outlined text-base">search</span>
@@ -50,25 +56,23 @@ function Header() {
             <input
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#cfdfe7] h-full placeholder:text-[#4c809a] px-[15px] rounded-r-none border-r-0 pr-2 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal"
               placeholder="Search for items, brands, or categories..."
-              value=""
+              name="search"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value) }}
             />
             <div className="flex items-center justify-center rounded-r-lg border-l-0 border border-[#cfdfe7] bg-slate-50 pr-1">
-              <button className="flex min-w-[70px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 px-3 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]">
+              <button className="flex min-w-[70px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 px-3 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]" type="submit" >
                 <span className="truncate">Search</span>
               </button>
             </div>
           </div>
-        </label>
+        </form>
       </div>
       <div className="flex items-center gap-4">
         {loggedIn ? (
           <>
-            <a className="text-[#0d171b] text-sm font-medium leading-normal" href="/create">
-              Sell an Item
-            </a>
-            <a className="text-[#0d171b] text-sm font-medium leading-normal" href="/account">
-              My Account
-            </a>
+            <Link to="/create" className="text-[#0d171b] text-sm font-medium leading-normal">Sell an Item</Link>
+            <Link to="/account" className="text-[#0d171b] text-sm font-medium leading-normal">My Account</Link>
           </>
         ) : (
           <div className="flex gap-2">

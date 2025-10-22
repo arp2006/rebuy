@@ -30,7 +30,6 @@ function Account() {
       if (!response2.ok) throw new Error('Failed to fetch posts');
       const archive = await response2.json();
       setOldPosts(archive);
-      console.log(oldPosts);
     } catch (error) {
       console.error(error);
     }
@@ -61,7 +60,7 @@ function Account() {
       >
         Logout
       </button>
-      <p className="text-2xl font-extrabold text-[#3498DB] uppercase tracking-wide mb-4 pl-4 pt-20">
+      <p className="text-2xl font-extrabold text-[#3498DB] uppercase tracking-wide mb-4 pl-4 pt-10">
         Active Posts
       </p>
       <div className="pt-0">
