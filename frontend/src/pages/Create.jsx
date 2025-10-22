@@ -208,7 +208,7 @@ function Create() {
                   >
                     <option disabled value="">Select a category</option>
                     <option>Electronics</option>
-                    <option>Books</option>
+                    <option>books</option>
                     <option>Games</option>
                     <option>Furniture</option>
                     <option>Toys</option>

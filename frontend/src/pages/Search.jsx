@@ -6,14 +6,20 @@ function Home() {
   const id = localStorage.getItem('userId');
   const [posts, setPosts] = useState([]);
   const [searchParams ] = useSearchParams();
-  const query = searchParams.get("query");
-  // console.log(id);
+  const query = searchParams.get('query');
+  const location = searchParams.get('location')
+  const min = searchParams.get('priceL');
+  const max = searchParams.get('priceU');
+  const categoriesStr = searchParams.get('categories');
+  const categories = categoriesStr ? categoriesStr.split(',') : [];
+
+  
   const getPosts = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: id, searchQuery: query }),
+        body: JSON.stringify({ uid: id, searchQuery: query, location: location, minP: min, maxP: max, categories: categories }),
       });
       if (!response.ok) throw new Error('Failed to fetch posts');
       const postsData = await response.json();
@@ -24,7 +30,7 @@ function Home() {
   };
   useEffect(() => {
     getPosts(); 
-  }, [query]);
+  }, [query, location, min, max, categoriesStr]);
 
   return (
     <div className="w-3/4">

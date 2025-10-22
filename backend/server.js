@@ -122,11 +122,32 @@ app.get("/api/categories", async (req, res) => {
 });
 
 app.post("/api/listings", async (req, res) => {
-  const { uid } = req.body;
+  const { uid, location, minP, maxP, categories } = req.body;
+  console.log(categories);
   try {
-    const posts = await db.query('SELECT * FROM items WHERE seller_id != $1;', [uid]);
+    let i = 1;
+    let qText = `SELECT * FROM items WHERE seller_id != $${i++} `;
+    const qParams = [uid];
+    if (location) {
+      qText += `AND location = $${i++} `;
+      qParams.push(location);
+    }
+    if (minP) {
+      qText += `AND price >= $${i++} `;
+      qParams.push(minP);
+    }
+    if (maxP) {
+      qText += `AND price <= $${i++} `;
+      qParams.push(maxP);
+    }
+    if (categories && categories.length > 0) {
+      qText += `AND category_id = ANY($${i++}) `;
+      qParams.push(categories);
+    }
+    qText += ';';
+    const posts = await db.query(qText, qParams);
     res.json(posts.rows);
-  }
+  } 
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -134,12 +155,29 @@ app.post("/api/listings", async (req, res) => {
 });
 
 app.post("/api/search", async (req, res) => {
-  const { uid, searchQuery } = req.body;
+  const { uid, searchQuery, location, minP, maxP, categories } = req.body;
   try {
-    const posts = await db.query(
-      `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%');`,
-      [uid, searchQuery]
-    );
+    let qText = `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%') `;
+let qParams = [uid, searchQuery];
+let i = 3;
+if (location) {
+  qText += `AND location = $${i++} `;
+  qParams.push(location);
+}
+if (minP) {
+  qText += `AND price >= $${i++} `;
+  qParams.push(minP);
+}
+if (maxP) {
+  qText += `AND price <= $${i++} `;
+  qParams.push(maxP);
+}
+if (categories && categories.length > 0) {
+  qText += `AND category_id = ANY($${i++}) `;
+  qParams.push(categories);
+}
+qText += ';';
+    const posts = await db.query(qText, qParams);
     res.json(posts.rows);
   } 
   catch (error) {

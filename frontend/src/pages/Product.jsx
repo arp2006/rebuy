@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Carousel from "../components/Carousel";
 
 function Product() {
@@ -140,13 +140,7 @@ function Product() {
                   Delete Post
                 </button>)}
             </div>
-
-            <a
-              className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium"
-              href="#"
-            >
-              View Seller's Other Items
-            </a>
+            <Link to={`/profile/${post.seller_id}`} className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium">View Seller's Other Items</Link>  
           </div>
 
         </div>
