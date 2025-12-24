@@ -36,7 +36,7 @@ function Home() {
     <div className="w-3/4">
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,0.2fr))] gap-4 p-4">
         {posts.length === 0 ? (
-          <p>No posts available.</p>
+          <p>No posts available for search terms.</p>
         ) : (
           posts.map(post => (
             <Item

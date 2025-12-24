@@ -54,13 +54,7 @@ function Account() {
 
   return (
     <div className="relative min-h-screen w-full">
-      <button
-        onClick={handleLogout}
-        className="absolute top-4 right-4 px-4 py-2 bg-red-500 text-black rounded font-medium hover:bg-red-600 transition duration-150"
-      >
-        Logout
-      </button>
-      <p className="text-2xl font-extrabold text-[#3498DB] uppercase tracking-wide mb-4 pl-4 pt-10">
+      <p className="text-2xl font-extrabold text-[#3498DB] uppercase tracking-wide mb-4 pl-4 ">
         Active Posts
       </p>
       <div className="pt-0">

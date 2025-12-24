@@ -108,7 +108,8 @@ function verifyToken(req, res, next) {
 app.get('/api/profile', verifyToken, async (req, res) => {
   try {
     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    if (result.rows.length === 0)
+      return res.status(401).json({ error: 'Unauthorized' });
     res.json(result.rows[0]);
   } 
   catch (err) {

@@ -12,7 +12,6 @@ function Home() {
   const categoriesStr = searchParams.get('categories');
   const categories = categoriesStr ? categoriesStr.split(',') : [];
 
-  // console.log(id);
   const getPosts = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/listings', {
@@ -34,7 +33,7 @@ function Home() {
 
   return (
     <div className="w-3/4">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,0.2fr))] gap-4 p-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,0.2fr))] gap-4 p-2.5 pt-0">
         {posts.length === 0 ? (
           <p>No posts available.</p>
         ) : (

@@ -29,7 +29,7 @@ function Product() {
       });
       if (!response.ok) throw new Error('Failed to fetch post');
       const postData = await response.json();
-      setPost(postData)
+      setPost(postData);
       setForm(({ ...form, email: postData.email }));
     }
     catch {
