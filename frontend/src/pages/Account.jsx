@@ -47,7 +47,7 @@ function Account() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.setItem('userId', 8);
+    localStorage.removeItem('userId');
     setLoggedIn(false);
     navigate('/login');
   };

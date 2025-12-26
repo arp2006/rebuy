@@ -51,7 +51,7 @@ function Register() {
   };
 
   useEffect(()=>{
-      if(id!=8)
+      if(id!=null)
         navigate("/", { replace: true });
     }, [navigate]);
 

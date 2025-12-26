@@ -124,11 +124,16 @@ app.get("/api/categories", async (req, res) => {
 
 app.post("/api/listings", async (req, res) => {
   const { uid, location, minP, maxP, categories } = req.body;
-  console.log(categories);
+  // console.log(categories);
   try {
     let i = 1;
     let qText = `SELECT * FROM items WHERE seller_id != $${i++} `;
     const qParams = [uid];
+    if(uid==null){
+      qText = `SELECT * FROM items `;
+      i++;
+      qParams.pop();
+    }
     if (location) {
       qText += `AND location = $${i++} `;
       qParams.push(location);

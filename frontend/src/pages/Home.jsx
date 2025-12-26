@@ -13,6 +13,8 @@ function Home() {
   const categories = categoriesStr ? categoriesStr.split(',') : [];
 
   const getPosts = async () => {
+    console.log(id);
+    
     try {
       const response = await fetch('http://localhost:3000/api/listings', {
         method: 'POST',

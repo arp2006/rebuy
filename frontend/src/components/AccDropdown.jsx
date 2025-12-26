@@ -21,7 +21,8 @@ function AccDropdown() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.setItem('userId', 8);
+    localStorage.removeItem('userId');
+    // localStorage.setItem('userId', 8);
     setLoggedIn(false);
     navigate('/login');
   };

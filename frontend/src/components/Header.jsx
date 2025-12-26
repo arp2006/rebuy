@@ -18,6 +18,7 @@ function Header() {
 
   useEffect(() => {
     async function checkLogin() {
+      // console.log(localStorage.getItem("userId"));
       const token = localStorage.getItem("token");
       if (!token) {
         setLoggedIn(false);
@@ -35,7 +36,8 @@ function Header() {
       catch {
         setLoggedIn(false);
         localStorage.removeItem("token");
-        localStorage.setItem('userId', 8);
+        localStorage.removeItem("userId");
+        // localStorage.setItem('userId', 8);
       }
     }
     checkLogin();
