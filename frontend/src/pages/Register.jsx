@@ -4,8 +4,7 @@ import { AuthContext } from "../AuthContext";
 
 function Register() {
   const navigate = useNavigate();
-  const id = localStorage.getItem('userId');
-  const { setLoggedIn } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -40,20 +39,20 @@ function Register() {
       } 
       else {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.user.id);
-        setLoggedIn(true);
+        setUser(data.user);
         navigate("/");
       }
     } catch (err) {
       setError('Failed to register: ' + err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(()=>{
-      if(id!=null)
-        navigate("/", { replace: true });
-    }, [navigate]);
+    if(user)
+      navigate("/", { replace: true });
+  }, [user, navigate]);
 
   return (
     <div

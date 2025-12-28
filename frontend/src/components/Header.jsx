@@ -5,7 +5,10 @@ import { AuthContext } from "../AuthContext";
 import AccDropdown from "./AccDropdown";
 
 function Header() {
-  const { loggedIn, setLoggedIn } = useContext(AuthContext);
+  const { user , loading } = useContext(AuthContext);
+  // const ctx = useContext(AuthContext);
+  // console.log("AUTH CONTEXT:", ctx);
+
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
@@ -15,33 +18,6 @@ function Header() {
       navigate(`/search?query=${encodeURIComponent(search.trim())}`);
     }
   };
-
-  useEffect(() => {
-    async function checkLogin() {
-      // console.log(localStorage.getItem("userId"));
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoggedIn(false);
-        return;
-      }
-      try {
-        const response = await fetch("http://localhost:3000/api/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log(response.body);
-        
-        setLoggedIn(response.ok);
-        if (!response.ok) localStorage.removeItem("token");
-      }
-      catch {
-        setLoggedIn(false);
-        localStorage.removeItem("token");
-        localStorage.removeItem("userId");
-        // localStorage.setItem('userId', 8);
-      }
-    }
-    checkLogin();
-  }, []);
 
   return (
     <header className="fixed w-full top-0 left-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7eff3] px-10 py-3 bg-white">
@@ -75,7 +51,7 @@ function Header() {
         </form>
       </div>
       <div className="flex items-center gap-4">
-        {loggedIn ? (
+        {loading ? null : user ? (
           <>
             <Link to="/create" className="text-[#0d171b] text-sm font-medium leading-normal">Sell an Item</Link>
             <AccDropdown />

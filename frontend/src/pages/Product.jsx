@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useParams, useNavigate, redirect } from "react-router-dom";
 import Carousel from "../components/Carousel";
+import { AuthContext } from "../AuthContext";
 
 function Product() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [post, setPost] = useState({});
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [form, setForm] = useState({
-    email: '',
-    password: ''
-  });
-  const uid = localStorage.getItem('userId');
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    console.log(form);
-  };
+  const [ post, setPost ] = useState({});
+  const [ error, setError ] = useState('');
+  const [ success, setSuccess ] = useState('');
+  const [ showDeleteModal, setShowDeleteModal ] = useState(false);
+  const { user, loading } = useContext(AuthContext);
   
   const getInfo = async () => {
     try {
@@ -30,7 +22,6 @@ function Product() {
       if (!response.ok) throw new Error('Failed to fetch post');
       const postData = await response.json();
       setPost(postData);
-      setForm(({ ...form, email: postData.email }));
     }
     catch {
       console.error(error);
@@ -39,19 +30,17 @@ function Product() {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.error || 'Wrong Passowrd');
+      const token = localStorage.getItem("token");
+      if(!token) {
+        navigate("/");
       }
       else {
         const response = await fetch('http://localhost:3000/api/deletelisting', {
           method: "POST",
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ id }),
         });
         if (response.ok) {
@@ -68,8 +57,9 @@ function Product() {
   }
 
   useEffect(() => {
+    if (loading) return;
     getInfo();
-  }, []);
+  }, [loading]);
 
   return (
     <div>
@@ -135,7 +125,7 @@ function Product() {
 
             <div className="mt-4 flex items-center justify-between">
               <p className="font-bold text-[#0d171b]">{post.name}</p>
-              {post.seller_id == uid && (
+              { !user || post.seller_id !== user.id ? <></> : (
                 <button onClick={() => setShowDeleteModal(true)} className="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700" >
                   Delete Post
                 </button>)}

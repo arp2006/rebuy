@@ -4,8 +4,10 @@ import { AuthContext } from "../AuthContext";
 
 function Login() {
   const navigate = useNavigate();
-  const id = localStorage.getItem('userId');
-  const { setLoggedIn } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
+  const id = user?.id;
+  // console.log(user);
+  
   const [form, setForm] = useState({
     email: '',
     password: ''
@@ -33,8 +35,7 @@ function Login() {
       } 
       else {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.user.id);
-        setLoggedIn(true);
+        setUser(data.user);
         navigate('/');
       }
     } catch (err) {
@@ -44,9 +45,9 @@ function Login() {
   };
 
   useEffect(()=>{
-    if(id!=null)
+    if(user)
       navigate("/", { replace: true });
-  }, [navigate]);
+  }, [user, navigate]);
 
   return (
     <div

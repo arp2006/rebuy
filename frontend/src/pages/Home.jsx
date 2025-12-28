@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Item from "../components/Item";
 import { useSearchParams } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 function Home() {
-  const id = localStorage.getItem('userId');
+  const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [searchParams] = useSearchParams();
   const location = searchParams.get('location')
@@ -13,13 +14,15 @@ function Home() {
   const categories = categoriesStr ? categoriesStr.split(',') : [];
 
   const getPosts = async () => {
-    console.log(id);
-    
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:3000/api/listings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: id, location: location, minP: min, maxP: max, categories: categories }),
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ location, minP: min, maxP: max, categories }),
       });
       if (!response.ok) throw new Error('Failed to fetch posts');
       const postsData = await response.json();
@@ -31,7 +34,7 @@ function Home() {
 
   useEffect(() => {
     getPosts(); 
-  }, [location, min, max, categoriesStr]);
+  }, [user, location, min, max, categoriesStr]);
 
   return (
     <div className="w-3/4">

@@ -5,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 function AccDropdown() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const id = localStorage.getItem('userId');
-  const { setLoggedIn } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  console.log(user);
+  
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -19,11 +21,8 @@ function AccDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    // localStorage.setItem('userId', 8);
-    setLoggedIn(false);
+  const handleLogout = () => {    
+    logout();
     navigate('/login');
   };
 
@@ -41,7 +40,7 @@ function AccDropdown() {
           src="/docs/images/people/profile-picture-5.jpg"
           alt="user"
         /> */}
-        Joseph McFall
+        {user.name}
         <svg
           className="w-4 h-4 ms-2"
           xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +69,7 @@ function AccDropdown() {
               /> */}
               <div>
                 <div className="font-medium text-heading">
-                  Joseph McFall
+                  {user.name}
                 </div>
               </div>
               {/* <span className="ms-auto bg-brand-softer border border-brand-subtle text-fg-brand-strong text-xs px-1.5 py-0.5 rounded">
@@ -106,7 +105,7 @@ function AccDropdown() {
                 onClick={handleLogout}
                 className="flex items-center w-full p-2 rounded bg-red-500 cursor-pointer hover:text-white"
               >
-                Sign Out
+                Log Out
               </a>
             </li>
           </ul>

@@ -4,19 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 function Account() {
-  const id = localStorage.getItem('userId');
-  const { setLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [oldPosts, setOldPosts] = useState([]);
-
+  // console.log("ACCOUNT PAGE:", { user, loading });
 
   const getPosts = async () => {
+    const token = localStorage.getItem("token");
+    if(!token) return;
     try {
       const response = await fetch('http://localhost:3000/api/account-listings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: id }),
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
       });
       if (!response.ok) throw new Error('Failed to fetch posts');
       const postsData = await response.json();
@@ -24,8 +26,10 @@ function Account() {
 
       const response2 = await fetch('http://localhost:3000/api/archive', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: id }),
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
       });
       if (!response2.ok) throw new Error('Failed to fetch posts');
       const archive = await response2.json();
@@ -35,22 +39,10 @@ function Account() {
     }
   };
 
-  useEffect(() => {
+  useEffect(()=>{
     getPosts();
   }, []);
 
-  useEffect(() => {
-    if (id == 8) {
-      navigate("/login", { replace: true });
-    }
-  }, [id, navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    setLoggedIn(false);
-    navigate('/login');
-  };
 
   return (
     <div className="relative min-h-screen w-full">

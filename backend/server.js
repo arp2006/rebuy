@@ -16,6 +16,31 @@ app.use(cors());
 dotenv.config();
 const upload = multer({ dest: 'temp/' });
 
+function auth(req, res, next) {
+  const header = req.headers.authorization;
+  console.log("AUTH HEADER:", header);
+
+  if (!header) {
+    req.user = null;
+    return next();
+  }
+
+  const token = header.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("JWT DECODED PAYLOAD:", decoded);
+    req.user = decoded;
+    next();
+  } catch (e) {
+    console.log("JWT VERIFY ERROR:", e.message);
+    req.user=null;
+    next();
+  }
+}
+
+app.use(auth);
+
 const db = new Pool({
   user: "postgres",
   host: "localhost",
@@ -105,17 +130,37 @@ function verifyToken(req, res, next) {
 //   });
 // }
 
-app.get('/api/profile', verifyToken, async (req, res) => {
-  try {
-    const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
-    if (result.rows.length === 0)
-      return res.status(401).json({ error: 'Unauthorized' });
-    res.json(result.rows[0]);
-  } 
-  catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
+// app.get('/api/profile', verifyToken, async (req, res) => {
+//   try {
+//     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
+//     if (result.rows.length === 0)
+//       return res.status(401).json({ error: 'Unauthorized' });
+//     res.json(result.rows[0]);
+//   } 
+//   catch (err) {
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+function requireAuth(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ error: "Login required" });
   }
+  next();
+}
+
+app.get("/api/me", async (req, res) => {
+  if (!req.user) {
+    return res.json({ user: null });
+  }
+  res.json({
+    user: {
+      id: req.user.sub
+    }
+  })
 });
+
+
 
 app.get("/api/categories", async (req, res) => {
   const categories = await db.query('SELECT name FROM categories;');
@@ -123,40 +168,43 @@ app.get("/api/categories", async (req, res) => {
 });
 
 app.post("/api/listings", async (req, res) => {
-  const { uid, location, minP, maxP, categories } = req.body;
-  // console.log(categories);
+  const { location, minP, maxP, categories } = req.body;
+  const uid = req.user?.sub ?? null; 
+  // console.log(uid);
+  
   try {
-    let i = 1;
-    let qText = `SELECT * FROM items WHERE seller_id != $${i++} `;
-    const qParams = [uid];
-    if(uid==null){
-      qText = `SELECT * FROM items `;
-      i++;
-      qParams.pop();
+    let conditions = [];
+    let params = [];
+    if (uid) {
+      params.push(uid);
+      conditions.push(`seller_id != $${params.length}`);
     }
     if (location) {
-      qText += `AND location = $${i++} `;
-      qParams.push(location);
+      params.push(location);
+      conditions.push(`location = $${params.length}`);
     }
     if (minP) {
-      qText += `AND price >= $${i++} `;
-      qParams.push(minP);
+      params.push(minP);
+      conditions.push(`price >= $${params.length}`);
     }
     if (maxP) {
-      qText += `AND price <= $${i++} `;
-      qParams.push(maxP);
+      params.push(maxP);
+      conditions.push(`price <= $${params.length}`);
     }
     if (categories && categories.length > 0) {
-      qText += `AND category_id = ANY($${i++}) `;
-      qParams.push(categories);
+      params.push(categories);
+      conditions.push(`category_id = ANY($${params.length})`);
     }
-    qText += ';';
-    const posts = await db.query(qText, qParams);
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
+
+    const query = `SELECT * FROM items ${whereClause};`;
+    const posts = await db.query(query, params);
     res.json(posts.rows);
-  } 
-  catch (error) {
-    console.error('Error fetching listings:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -164,25 +212,25 @@ app.post("/api/search", async (req, res) => {
   const { uid, searchQuery, location, minP, maxP, categories } = req.body;
   try {
     let qText = `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%') `;
-let qParams = [uid, searchQuery];
-let i = 3;
-if (location) {
-  qText += `AND location = $${i++} `;
-  qParams.push(location);
-}
-if (minP) {
-  qText += `AND price >= $${i++} `;
-  qParams.push(minP);
-}
-if (maxP) {
-  qText += `AND price <= $${i++} `;
-  qParams.push(maxP);
-}
-if (categories && categories.length > 0) {
-  qText += `AND category_id = ANY($${i++}) `;
-  qParams.push(categories);
-}
-qText += ';';
+  let qParams = [uid, searchQuery];
+  let i = 3;
+  if (location) {
+    qText += `AND location = $${i++} `;
+    qParams.push(location);
+  }
+  if (minP) {
+    qText += `AND price >= $${i++} `;
+    qParams.push(minP);
+  }
+  if (maxP) {
+    qText += `AND price <= $${i++} `;
+    qParams.push(maxP);
+  }
+  if (categories && categories.length > 0) {
+    qText += `AND category_id = ANY($${i++}) `;
+    qParams.push(categories);
+  }
+  qText += ';';
     const posts = await db.query(qText, qParams);
     res.json(posts.rows);
   } 
@@ -192,8 +240,8 @@ qText += ';';
   }
 });
 
-app.post("/api/account-listings", async (req, res) => {
-  const { uid } = req.body;
+app.post("/api/account-listings", requireAuth, async (req, res) => {
+  const uid = req.user.sub;
   try {
     const posts = await db.query('SELECT * FROM items WHERE seller_id = $1;', [uid]);
     res.json(posts.rows);
@@ -204,8 +252,8 @@ app.post("/api/account-listings", async (req, res) => {
   }
 });
 
-app.post("/api/archive", async (req, res) => {
-  const { uid } = req.body;
+app.post("/api/archive", requireAuth, async (req, res) => {
+  const uid = req.user.sub;
   try {
     const posts = await db.query('SELECT * FROM archive WHERE seller_id = $1;', [uid]);
     res.json(posts.rows);
@@ -216,13 +264,19 @@ app.post("/api/archive", async (req, res) => {
   }
 });
 
-app.post("/api/deletelisting", async (req, res) => {
+app.post("/api/deletelisting", requireAuth, async (req, res) => {
   const { id } = req.body;
-  if (!id) {
-    return res.status(400).json({ error: 'Missing item id' });
-  }
   try {
     await db.query('BEGIN;');
+    const response = await db.query('SELECT seller_id FROM items WHERE id = $1;', [id]);
+    if(response.rows.length === 0){
+      await db.query('ROLLBACK;');
+      return res.status(404).json({ error: "Item not found" });
+    }
+    if(response.rows[0].seller_id !== req.user.sub){
+      await db.query('ROLLBACK;');
+      return res.status(403).json({ error: "Forbidden" });
+    }
     await db.query(`
       INSERT INTO archive (id, title, description, price, location, category_id, seller_id, images, created_at, removed_at)
       SELECT id, title, description, price, location, category_id, seller_id, images, created_at, NOW()
@@ -278,12 +332,22 @@ app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   }
 });
 
-app.post('/api/create', async (req, res) => {
+app.post('/api/create', requireAuth, async (req, res) => {
   try {
-    const { title, desc, price, location, category, uid, imageUrls } = req.body;
-    if (!title || !desc || !price || !location || !category || !uid || !Array.isArray(imageUrls) || imageUrls.length === 0) {
+    const { title, desc, price, location, category, imageUrls } = req.body;
+    const uid=req.user.sub;
+    if (Number(uid) !== req.user.sub) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    // const userId = req.user.sub;
+    // console.log(userId);
+
+    if (!title || !desc || !price || !location || !category || !Array.isArray(imageUrls) || imageUrls.length === 0) {
       return res.status(400).json({ error: "Missing required fields or no images uploaded" });
     }
+
+
     const getCategory = await db.query('SELECT id FROM categories WHERE name = $1;', [category]);
     if (getCategory.rows.length === 0) {
       return res.status(400).json({ error: "Category not found" });
@@ -317,9 +381,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid password' });
     }
     const userData = { id: user.id, name: user.name, email: email };
-    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = jwt.sign(
+      { sub: user.id }, 
+      process.env.JWT_SECRET,
+      { expiresIn: '1h'}
+    );
+
     res.status(200).json({ user: userData, token });
   }
   catch (err) {
@@ -347,9 +414,11 @@ app.post('/api/register', async (req, res) => {
       [name, email, hashedPass, region || null]
     );
     const userData = result.rows[0];
-    const token = jwt.sign({ userId: userData.id, email: userData.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = jwt.sign(
+      { sub: user.id }, 
+      process.env.JWT_SECRET,
+      { expiresIn: '1h'}
+    );
     res.status(201).json({ user: userData, token });
   }
   catch (err) {

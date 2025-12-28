@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './pages/Layout';
+import Layout from './Layout';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Login from './pages/Login';
@@ -13,6 +13,7 @@ import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Tos from './pages/Tos';
+import RequireAuth from './RequireAuth';
 
 
 function App() {
@@ -25,13 +26,15 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<Product />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/success" element={<Success />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/tos" element={<Tos />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacypolicy" element={<Privacy />} />
+          <Route element={<RequireAuth/>}>
+            <Route path="/create" element={<Create />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/success" element={<Success />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

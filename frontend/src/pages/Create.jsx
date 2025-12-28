@@ -11,8 +11,7 @@ function Create() {
     desc: '',
     price: '',
     location: '',
-    category: '',
-    uid: id
+    category: ''
   });
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -72,9 +71,13 @@ function Create() {
     try {
       const imageUrls = await uploadImages();
       const payload = { ...form, imageUrls, uid: id };
+      const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:3000/api/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
 
