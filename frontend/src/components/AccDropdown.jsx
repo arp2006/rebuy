@@ -94,7 +94,7 @@ function AccDropdown() {
             </li>
             <li>
               <a
-                href=""
+                onClick={() => navigate("/settings/account")}
                 className="flex items-center w-full p-2 rounded cursor-pointer hover:bg-gray-100"
               >
                 Settings

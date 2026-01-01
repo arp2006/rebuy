@@ -13,7 +13,6 @@ function Home() {
   const categoriesStr = searchParams.get('categories');
   const categories = categoriesStr ? categoriesStr.split(',') : [];
 
-  
   const getPosts = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/search', {

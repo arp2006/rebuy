@@ -381,6 +381,7 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid password' });
     }
     const userData = { id: user.id, name: user.name, email: email };
+    // const userData = { id: user.id };
     const token = jwt.sign(
       { sub: user.id }, 
       process.env.JWT_SECRET,
@@ -414,6 +415,7 @@ app.post('/api/register', async (req, res) => {
       [name, email, hashedPass, region || null]
     );
     const userData = result.rows[0];
+    // const userData = { id: result.rows[0].id };
     const token = jwt.sign(
       { sub: user.id }, 
       process.env.JWT_SECRET,

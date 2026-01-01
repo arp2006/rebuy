@@ -14,7 +14,7 @@ import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Tos from './pages/Tos';
 import RequireAuth from './RequireAuth';
-
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   return (
@@ -30,6 +30,7 @@ function App() {
           <Route path="/tos" element={<Tos />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacypolicy" element={<Privacy />} />
+          <Route path="/settings/:page" element={ <SettingsPage /> } />
           <Route element={<RequireAuth/>}>
             <Route path="/create" element={<Create />} />
             <Route path="/account" element={<Account />} />
