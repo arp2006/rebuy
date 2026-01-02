@@ -4,7 +4,12 @@ import { AuthContext } from "../../AuthContext";
 
 function SettingsSidebar() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const handleLogoutClick = () => {
+    const ok = window.confirm("Are you sure you want to log out?");
+    ok && logout();
+  };
+
   return (
     <aside className="w-full md:w-64 lg:w-72 flex-shrink-0">
       <div className="bg-white rounded-xl p-4 shadow-sm border sticky top-24">
@@ -68,20 +73,23 @@ function SettingsSidebar() {
 
         <div className="border-t pt-4">
           {user ?
-            <button className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors">
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors"
+              onClick={handleLogoutClick}
+            >
               <span className="material-symbols-outlined text-[18px]">
                 logout
               </span>
               <span>Log Out</span>
-            </button> :
+            </button>
+            :
             <button
               className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-blue-50 text-blue-600 text-sm font-bold hover:bg-blue-100 transition-colors"
+              onClick={() => navigate("/login")}
             >
-              {/* <span className="material-symbols-outlined text-[18px]">
-                login
-              </span> */}
               <span>Login</span>
-            </button>}
+            </button>
+          }
         </div>
       </div>
     </aside>

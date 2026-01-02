@@ -34,7 +34,7 @@ function auth(req, res, next) {
     next();
   } catch (e) {
     console.log("JWT VERIFY ERROR:", e.message);
-    req.user=null;
+    req.user = null;
     next();
   }
 }
@@ -129,10 +129,9 @@ function verifyToken(req, res, next) {
 //     next();
 //   });
 // }
-
-// app.get('/api/profile', verifyToken, async (req, res) => {
+// app.get('/api/profile', requireAuth, async (req, res) => {
 //   try {
-//     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.userId]);
+//     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.user.sub]);
 //     if (result.rows.length === 0)
 //       return res.status(401).json({ error: 'Unauthorized' });
 //     res.json(result.rows[0]);
@@ -160,8 +159,6 @@ app.get("/api/me", async (req, res) => {
   })
 });
 
-
-
 app.get("/api/categories", async (req, res) => {
   const categories = await db.query('SELECT name FROM categories;');
   res.json(categories.rows);
@@ -169,9 +166,9 @@ app.get("/api/categories", async (req, res) => {
 
 app.post("/api/listings", async (req, res) => {
   const { location, minP, maxP, categories } = req.body;
-  const uid = req.user?.sub ?? null; 
+  const uid = req.user?.sub ?? null;
   // console.log(uid);
-  
+
   try {
     let conditions = [];
     let params = [];
@@ -212,28 +209,28 @@ app.post("/api/search", async (req, res) => {
   const { uid, searchQuery, location, minP, maxP, categories } = req.body;
   try {
     let qText = `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%') `;
-  let qParams = [uid, searchQuery];
-  let i = 3;
-  if (location) {
-    qText += `AND location = $${i++} `;
-    qParams.push(location);
-  }
-  if (minP) {
-    qText += `AND price >= $${i++} `;
-    qParams.push(minP);
-  }
-  if (maxP) {
-    qText += `AND price <= $${i++} `;
-    qParams.push(maxP);
-  }
-  if (categories && categories.length > 0) {
-    qText += `AND category_id = ANY($${i++}) `;
-    qParams.push(categories);
-  }
-  qText += ';';
+    let qParams = [uid, searchQuery];
+    let i = 3;
+    if (location) {
+      qText += `AND location = $${i++} `;
+      qParams.push(location);
+    }
+    if (minP) {
+      qText += `AND price >= $${i++} `;
+      qParams.push(minP);
+    }
+    if (maxP) {
+      qText += `AND price <= $${i++} `;
+      qParams.push(maxP);
+    }
+    if (categories && categories.length > 0) {
+      qText += `AND category_id = ANY($${i++}) `;
+      qParams.push(categories);
+    }
+    qText += ';';
     const posts = await db.query(qText, qParams);
     res.json(posts.rows);
-  } 
+  }
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -269,11 +266,11 @@ app.post("/api/deletelisting", requireAuth, async (req, res) => {
   try {
     await db.query('BEGIN;');
     const response = await db.query('SELECT seller_id FROM items WHERE id = $1;', [id]);
-    if(response.rows.length === 0){
+    if (response.rows.length === 0) {
       await db.query('ROLLBACK;');
       return res.status(404).json({ error: "Item not found" });
     }
-    if(response.rows[0].seller_id !== req.user.sub){
+    if (response.rows[0].seller_id !== req.user.sub) {
       await db.query('ROLLBACK;');
       return res.status(403).json({ error: "Forbidden" });
     }
@@ -300,18 +297,17 @@ app.post("/api/info", async (req, res) => {
     return res.status(400).json({ error: "Missing 'id' in request body" });
   }
   try {
-    const post = await db.query('SELECT * FROM items JOIN users ON items.seller_id = users.id WHERE items.id = $1;', [id]);
-    if (post.rows.length === 0) {
+    const item = await db.query('SELECT * FROM items JOIN user_data ON items.seller_id = user_data.id WHERE items.id = $1;', [id]);
+    if (item.rows.length === 0) {
       return res.status(404).json({ error: "Post not found" });
     }
-    res.json(post.rows[0]);
+    res.json(item.rows[0]);
   }
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
@@ -335,19 +331,13 @@ app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
 app.post('/api/create', requireAuth, async (req, res) => {
   try {
     const { title, desc, price, location, category, imageUrls } = req.body;
-    const uid=req.user.sub;
+    const uid = req.user.sub;
     if (Number(uid) !== req.user.sub) {
       return res.status(403).json({ error: "Forbidden" });
     }
-
-    // const userId = req.user.sub;
-    // console.log(userId);
-
     if (!title || !desc || !price || !location || !category || !Array.isArray(imageUrls) || imageUrls.length === 0) {
       return res.status(400).json({ error: "Missing required fields or no images uploaded" });
     }
-
-
     const getCategory = await db.query('SELECT id FROM categories WHERE name = $1;', [category]);
     if (getCategory.rows.length === 0) {
       return res.status(400).json({ error: "Category not found" });
@@ -365,27 +355,55 @@ app.post('/api/create', requireAuth, async (req, res) => {
   }
 });
 
+app.get('/api/details', requireAuth, async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT username, name, bio, email 
+      FROM user_data ud JOIN users u
+      ON ud.id = u.id
+      WHERE ud.id=$1;
+      `, [req.user.sub]
+    );
+    if (result.rows.length === 0)
+      return res.status(404).json({ error: 'User not found' });
+    res.json(result.rows[0]);
+  }
+  catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.patch('/api/changedetails', requireAuth, async (req, res) => {
+  const { name, username, bio } = req.body;
+  try {
+    
+  }
+  catch { }
+});
+
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
-    const existing = await db.query('SELECT id, name, password_hash FROM users WHERE email = $1;', [email]);
+    let existing = await db.query('SELECT id, password_hash FROM users WHERE email = $1;', [email]);
     if (existing.rows.length === 0) {
-      return res.status(404).json({ error: 'Account with given email does not exist' });
+      existing = await db.query('SELECT id, password_hash FROM users WHERE username = $1;', [email]);
+      if (existing.rows.length === 0)
+        return res.status(404).json({ error: 'Account with given email/usrname does not exist' });
     }
     const user = existing.rows[0];
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid password' });
     }
-    const userData = { id: user.id, name: user.name, email: email };
+    const userData = { id: user.id };
     // const userData = { id: user.id };
     const token = jwt.sign(
-      { sub: user.id }, 
+      { sub: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: '1h'}
+      { expiresIn: '1h' }
     );
 
     res.status(200).json({ user: userData, token });
@@ -397,37 +415,51 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.post('/api/register', async (req, res) => {
-  const { name, email, password, repeatPassword, region } = req.body;
-  if (!name || !email || !password || !repeatPassword) {
+  const { name, username, email, password, repeatPassword, region } = req.body;
+
+  if (!name || !username || !email || !password || !repeatPassword) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   if (password !== repeatPassword) {
     return res.status(400).json({ error: 'Passwords do not match' });
   }
   try {
-    const existing = await db.query('SELECT id FROM users WHERE email = $1;', [email]);
+    const existing = await db.query(
+      'SELECT id FROM users WHERE email = $1;',
+      [email]
+    );
+
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: 'Email is already registered' });
     }
     const hashedPass = await bcrypt.hash(password, 10);
+    await db.query('BEGIN');
     const result = await db.query(
-      'INSERT INTO users(name,email,password_hash,region) VALUES($1, $2, $3, $4) RETURNING id, name, email;',
-      [name, email, hashedPass, region || null]
+      'INSERT INTO users(username, email, password_hash, region) VALUES($1, $2, $3, $4) RETURNING id;',
+      [username, email, hashedPass, region || null]
     );
-    const userData = result.rows[0];
-    // const userData = { id: result.rows[0].id };
+    await db.query(
+      'INSERT INTO user_data (id, name) VALUES($1, $2);',
+      [result.rows[0].id, name]
+    );
+    await db.query('COMMIT');
     const token = jwt.sign(
-      { sub: user.id }, 
+      { sub: result.rows[0].id },
       process.env.JWT_SECRET,
-      { expiresIn: '1h'}
+      { expiresIn: '1h' }
     );
-    res.status(201).json({ user: userData, token });
+    res.status(201).json({
+      user: { id: result.rows[0].id },
+      token
+    });
   }
   catch (err) {
+    await db.query('ROLLBACK');
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

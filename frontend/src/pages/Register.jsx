@@ -7,6 +7,7 @@ function Register() {
   const { user, setUser } = useContext(AuthContext);
   const [form, setForm] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     repeatPassword: '',
@@ -16,7 +17,8 @@ function Register() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
+    console.log(e.target.name);
   };
 
   const handleSubmit = async (e) => {
@@ -30,13 +32,13 @@ function Register() {
     try {
       const response = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
       const data = await response.json();
       if (!response.ok) {
         setError(data.error || 'Registration failed');
-      } 
+      }
       else {
         localStorage.setItem('token', data.token);
         setUser(data.user);
@@ -49,8 +51,8 @@ function Register() {
     }
   };
 
-  useEffect(()=>{
-    if(user)
+  useEffect(() => {
+    if (user)
       navigate("/", { replace: true });
   }, [user, navigate]);
 
@@ -84,6 +86,20 @@ function Register() {
                         type="text"
                         name="name"
                         value={form.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+                    <label className="flex flex-col min-w-40 flex-1">
+                      <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
+                        Username
+                      </p>
+                      <input
+                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#cfdfe7] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal"
+                        placeholder="Full Name"
+                        type="text"
+                        name="username"
+                        value={form.username}
                         onChange={handleChange}
                         required
                       />
@@ -148,7 +164,7 @@ function Register() {
                     </label>
                   </div>
                   {error && <p className="text-red-600 text-center">{error}</p>}
-                  <button 
+                  <button
                     className="w-full bg-[#13a4ec] text-white font-bold py-3 px-4 rounded-lg hover:bg-[#118ac9] transition-colors"
                     type="submit"
                     disabled={loading}

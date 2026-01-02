@@ -166,10 +166,10 @@ function Product() {
 
                   <button
                     onClick={handleDelete}
-                    className="px-4 py-2 rounded-md bg-red-500 hover:bg-red-600 text-white text-sm"
+                    className="px-4 py-2 rounded-md bg-[#3498DB] text-white text-sm"
                     type="submit"
                   >
-                    Delete
+                    Edit Post
                   </button>
                 </>
               )}

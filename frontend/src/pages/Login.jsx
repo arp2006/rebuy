@@ -71,12 +71,12 @@ function Login() {
                   <div className="flex flex-col gap-4">
                     <label className="flex flex-col min-w-40 flex-1">
                       <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
-                        Email
+                        Username / Email
                       </p>
                       <input
                         className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#cfdfe7] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal"
-                        placeholder="Email Address"
-                        type="email"
+                        placeholder="Username / Email Address"
+                        type="text"
                         name="email"
                         value={form.email}
                         onChange={handleChange}

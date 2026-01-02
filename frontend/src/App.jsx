@@ -15,6 +15,7 @@ import Privacy from './pages/Privacy';
 import Tos from './pages/Tos';
 import RequireAuth from './RequireAuth';
 import SettingsPage from './pages/SettingsPage';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/success" element={<Success />} />
           </Route>
+          <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

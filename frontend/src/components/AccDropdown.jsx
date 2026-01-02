@@ -5,10 +5,7 @@ import { useNavigate } from "react-router-dom";
 function AccDropdown() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { user } = useContext(AuthContext);
-  console.log(user);
-  
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   
   useEffect(() => {

@@ -2,10 +2,16 @@ DROP TABLE users, items, archive;
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  username VARCHAR(255) UNIQUE NOT NULL, 
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   region VARCHAR(100)
+);
+
+CREATE TABLE user_data (
+  id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(50) NOT NULL,
+  bio VARCHAR(150)
 );
 
 CREATE TABLE items (
@@ -48,7 +54,3 @@ VALUES
   ('Apparel'),
   ('Musical instruments'),
   ('Shoes');
-
-  -- ask jignesh sir --
-  CREATE INDEX idx_items_category_id ON items(category_id);
-  CREATE INDEX idx_items_seller_id ON items(seller_id);`
