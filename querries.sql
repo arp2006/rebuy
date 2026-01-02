@@ -54,3 +54,6 @@ VALUES
   ('Apparel'),
   ('Musical instruments'),
   ('Shoes');
+
+
+test
