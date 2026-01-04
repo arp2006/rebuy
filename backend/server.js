@@ -375,11 +375,84 @@ app.get('/api/details', requireAuth, async (req, res) => {
 
 app.patch('/api/changedetails', requireAuth, async (req, res) => {
   const { name, username, bio } = req.body;
-  try {
-    
+  if (!username && !name && !bio) {
+    return res.status(400).json({ error: 'Nothing to update' });
   }
-  catch { }
+  const id = req.user.sub;
+  try {
+    await db.query('BEGIN');
+    if (username) {
+      await db.query(
+        'UPDATE users SET username = $1 WHERE id = $2;',
+        [username, id]
+      );
+    }
+    if (name || bio) {
+      await db.query(
+        `
+        UPDATE user_data
+        SET
+          name = COALESCE($1, name),
+          bio  = COALESCE($2, bio)
+        WHERE id = $3;
+        `,
+        [name, bio, id]
+      );
+    }
+    await db.query('COMMIT');
+    res.json({ message: 'Profile updated successfully.' });
+  }
+  catch (err) {
+    await db.query('ROLLBACK');
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'Username already taken.' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
+
+app.patch('/api/changepassword', requireAuth, async (req, res) => {
+  const { oldPass, newPass, confPass } = req.body;
+  if (!oldPass || !newPass || !confPass) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+  if (newPass !== confPass) {
+    return res.status(400).json({ error: 'Passwords do not match.' });
+  }
+  if (oldPass === newPass) {
+    return res.status(400).json({
+      error: 'New password must be different from old password.'
+    });
+  }
+  try {
+    const result = await db.query(
+      'SELECT password_hash FROM users WHERE id = $1;',
+      [req.user.sub]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    const passwordMatch = await bcrypt.compare(
+      oldPass,
+      result.rows[0].password_hash
+    );
+    if (!passwordMatch) {
+      return res.status(400).json({ error: 'Old password is incorrect.' });
+    }
+    const hashedPass = await bcrypt.hash(newPass, 10);
+
+    await db.query(
+      'UPDATE users SET password_hash = $1 WHERE id = $2;',
+      [hashedPass, req.user.sub]
+    );
+    res.json({ message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;

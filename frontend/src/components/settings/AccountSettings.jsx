@@ -4,23 +4,58 @@ import { AuthContext } from "../../AuthContext";
 function AccountSettings() {
   const { user } = useContext(AuthContext);
   const [name, setDisplayName] = useState("");
-  const [username, setUsername] = useState(user ? user.name : "");
+  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [update, setUpdate] = useState("Update");
+  const [original, setOriginal] = useState(null);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const fetchDetails = async () => {
     try {
-      const payload = { name, username, bio };
       const token = localStorage.getItem("token");
       if (!token) {
         setError("Not authenticated");
         return;
       }
+      const response = await fetch("http://localhost:3000/api/details", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch details");
+      }
+      const data = await response.json();
+      setBio(data.bio);
+      setDisplayName(data.name);
+      setUsername(data.username);
+      setOriginal({
+        name: data.name,
+        username: data.username,
+        bio: data.bio || ""
+      });
+    } catch (err) {
+      console.log(err.message || "Network error");
+    }
+  };
+  
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Not authenticated");
+        return;
+      }
+      const hasChange = name !== original.name || username !== original.username || bio !== original.bio;
+      if(!hasChange){
+        setError("No changes to update.");
+        return;
+      }
+    setLoading(true);
+      let payload = { name, username, bio };
       const response = await fetch('http://localhost:3000/api/changedetails', {
         method: 'PATCH',
         headers: {
@@ -45,30 +80,6 @@ function AccountSettings() {
   };
 
   useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("Not authenticated");
-          return;
-        }
-        const response = await fetch("http://localhost:3000/api/details", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch details");
-        }
-        const data = await response.json();
-        setBio(data.bio);
-        setDisplayName(data.name);
-        setUsername(data.username)
-      } catch (err) {
-        console.log(err.message || "Network error");
-      }
-    };
-
     fetchDetails();
   }, []);
 
@@ -138,12 +149,20 @@ function AccountSettings() {
               </div>
               {error && <p className="text-left text-red-600">{error}</p>}
             </div>
-            <button
-              className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
-            // onClick={() => navigate("/login")}
-            >
-              {loading ? 'Updating...' : update}
-            </button>
+            <div className="flex flex-rows gap-3">
+              <button
+                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                onClick={handleUpdate}
+              >
+                {loading ? 'Updating...' : update}
+              </button>
+              <button
+                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em]"
+                onClick={fetchDetails}
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </section>
         {!user && (
