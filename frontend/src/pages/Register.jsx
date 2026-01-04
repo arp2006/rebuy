@@ -64,7 +64,7 @@ function Register() {
       <div className="layout-container flex h-full grow flex-col">
         <div className="px-40 flex flex-1 justify-center py-5">
           <div className="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div className="flex flex-col items-center mt-10">
+            <div className="flex flex-col items-center mt-1">
               <div className="w-full max-w-md">
                 <div className="flex flex-wrap justify-between gap-3 p-4">
                   <p className="text-[#0d171b] text-4xl font-black leading-tight tracking-[-0.033em] w-full text-center">
@@ -105,9 +105,12 @@ function Register() {
                       />
                     </label>
                     <label className="flex flex-col min-w-40 flex-1">
-                      <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
-                        Email
-                      </p>
+                      <div className="flex justify-between items-center pb-2">
+                        <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
+                          Email
+                        </p>
+                        <span className="text-sm text-red-500">Unchangable</span>
+                      </div>
                       <input
                         className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#cfdfe7] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal"
                         placeholder="Email Address"
