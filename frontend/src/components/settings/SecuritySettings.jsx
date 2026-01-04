@@ -157,14 +157,17 @@ function SecuritySettings() {
 
               <div className="w-full md:w-1/2">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-[#0f172a]">
-                    E-mail
-                  </label>
+                  <div className="flex justify-between items-center pb-2">
+                    <label className="text-sm font-semibold text-[#0f172a]">
+                      E-mail
+                    </label>
+
+                    <span className="text-sm text-gray-500">Read only</span> </div>
                   <input
-                    className="w-full rounded-lg overflow-hidden !text-[#0f172a] bg-gray-100 dark:bg-background-dark border-transparent focus:border-[#3498DB] focus:ring-0 dark:text-white px-4 py-2.5 text-sm transition-colors"
+                    className="w-full rounded-lg cursor-text overflow-hidden !text-[#0f172a] bg-gray-100 dark:bg-background-dark border-transparent focus:border-[#3498DB] focus:ring-0 dark:text-white px-4 py-2.5 text-sm transition-colors"
                     type="text"
                     value={email}
-                    readOnly
+                    disabled
                   />
 
                 </div>
