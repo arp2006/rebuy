@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function Create() {
   const navigate = useNavigate();
-  const { setLoggedIn } = useContext(AuthContext);
-  const id = localStorage.getItem('userId');
+  const { user } = useContext(AuthContext);
   const [form, setForm] = useState({
     title: '',
     desc: '',
@@ -35,16 +34,19 @@ function Create() {
   };
 
   useEffect(() => {
+    if(!user) {
+      navigate("/login");
+    }
     return () => {
       imagePreviews.forEach(url => URL.revokeObjectURL(url));
     };
-  }, [imagePreviews]);
+  }, [imagePreviews, navigate]);
 
-  useEffect(()=>{
-    if (id==8) {
-      navigate("/login", { replace: true });
-    }
-  }, [ navigate]);
+  // useEffect(()=>{
+  //   if (id==8) {
+  //     navigate("/login", { replace: true });
+  //   }
+  // }, [ navigate]);
 
   const uploadImages = async () => {
     if (images.length === 0) return [];
@@ -180,7 +182,6 @@ function Create() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4 border-t border-[#e7eff3]">
-              {/* Price */}
               <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                   Price
@@ -197,7 +198,6 @@ function Create() {
                 </div>
               </label>
 
-              {/* Category */}
               <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                   Category
@@ -225,7 +225,6 @@ function Create() {
                 </div>
               </label>
 
-              {/* Location */}
               <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-[#0d171b] text-base font-medium leading-normal pb-2">
                   Location
@@ -235,7 +234,6 @@ function Create() {
                     className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#4385a5] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal pr-10"
                     placeholder="e.g., Mumbai"
                     value={form.location}
-                    onChange={handleChange}
                     name="location"
                   />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c809a]">
@@ -245,7 +243,6 @@ function Create() {
               </label>
             </div>
 
-            {/* Status Feedback */}
             {error && <div className="text-red-600 font-semibold">{error}</div>}
 
             <div className="flex justify-end gap-4 mt-12 pt-6 border-t border-[#e7eff3]">

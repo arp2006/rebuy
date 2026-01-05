@@ -16,6 +16,7 @@ import Tos from './pages/Tos';
 import RequireAuth from './RequireAuth';
 import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
+import EditPost from './pages/EditPost';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacypolicy" element={<Privacy />} />
           <Route path="/settings/:page" element={ <SettingsPage /> } />
+          <Route path="/edit/:id" element={ <EditPost /> } />
           <Route element={<RequireAuth/>}>
             <Route path="/create" element={<Create />} />
             <Route path="/account" element={<Account />} />

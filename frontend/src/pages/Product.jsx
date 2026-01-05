@@ -6,18 +6,17 @@ import { AuthContext } from "../AuthContext";
 function Product() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [ post, setPost ] = useState({});
-  const [ error, setError ] = useState('');
-  const [ success, setSuccess ] = useState('');
-  const [ showDeleteModal, setShowDeleteModal ] = useState(false);
+  const [post, setPost] = useState({});
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { user, loading } = useContext(AuthContext);
-  
+
   const getInfo = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/info', {
-        method: "POST",
+      const response = await fetch(`http://localhost:3000/api/items/${id}`, {
+        method: "GET",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
       });
       if (!response.ok) throw new Error('Failed to fetch post');
       const postData = await response.json();
@@ -31,13 +30,13 @@ function Product() {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      if(!token) {
+      if (!token) {
         navigate("/");
       }
       else {
         const response = await fetch('http://localhost:3000/api/deletelisting', {
           method: "POST",
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
@@ -124,61 +123,21 @@ function Product() {
             <h3 className="text-[#0d171b] text-lg font-bold">Seller Information</h3>
 
             <div className="mt-4 flex items-center justify-between">
-              <p className="font-bold text-[#0d171b]">{post.name}</p>
-              { !user || post.seller_id !== user.id ? <></> : (
-                <button onClick={() => setShowDeleteModal(true)} className="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700" >
-                  Delete Post
+              <p className="font-bold text-[#0d171b]">{post.seller_name}</p>
+              {!user || post.seller_id !== user.id ? <></> : (
+                <button 
+                  onClick={() => navigate(`/edit/${post.id}`)} 
+                  className="px-4 py-2  bg-[#13a4ec] text-white rounded-md text-sm]" 
+                >
+                  Edit Post
                 </button>)}
             </div>
-            <Link to={`/profile/${post.seller_id}`} className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium">View Seller's Other Items</Link>  
+            <Link to={`/profile/${post.seller_id}`} className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium">View Seller's Other Items</Link>
           </div>
 
         </div>
       </div>
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[350px]">
-            <h3 className="text-lg font-bold text-[#0d171b]">Enter Account Password</h3>
-            <p className="text-sm text-slate-600 mt-2">
-              Are you sure you want to delete this post? This action cannot be undone.
-            </p>
-            <p className="text-sm text-slate-600 mt-2 font-extrabold">
-              User: {post.name}
-            </p>
-
-            <input
-              className="form-input flex w-full min-w-0 h-[40px] my-[15px] flex-1 resize-none overflow-hidden rounded-lg text-[#0d171b] focus:outline-0 focus:ring-0 border border-[#cfdfe7] bg-slate-50 focus:border-[#cfdfe7] h-14 placeholder:text-[#4c809a] p-[15px] text-base font-normal leading-normal"
-              placeholder="Password"
-              type="password"
-              name="password"
-              onChange={handleChange}
-              required
-            />
-            <div className="mt-6 flex justify-end gap-3">
-              {!success && (
-                <>
-                  <button
-                    onClick={() => { setShowDeleteModal(false); setError('') }}
-                    className="px-4 py-2 rounded-md border border-slate-300 text-sm hover:bg-slate-100"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    onClick={handleDelete}
-                    className="px-4 py-2 rounded-md bg-[#3498DB] text-white text-sm"
-                    type="submit"
-                  >
-                    Edit Post
-                  </button>
-                </>
-              )}
-            </div>
-            {error && <p className="text-red-600 mt-[7px] text-center">{error}</p>}
-            {success && <p className="text-grey-600 mt-[7px] text-center">{success}</p>}
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 }

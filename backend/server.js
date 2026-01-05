@@ -261,53 +261,154 @@ app.post("/api/archive", requireAuth, async (req, res) => {
   }
 });
 
-app.post("/api/deletelisting", requireAuth, async (req, res) => {
-  const { id } = req.body;
+app.delete('/api/items/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.sub;
+  const client = await db.connect();
   try {
-    await db.query('BEGIN;');
-    const response = await db.query('SELECT seller_id FROM items WHERE id = $1;', [id]);
-    if (response.rows.length === 0) {
-      await db.query('ROLLBACK;');
-      return res.status(404).json({ error: "Item not found" });
-    }
-    if (response.rows[0].seller_id !== req.user.sub) {
-      await db.query('ROLLBACK;');
-      return res.status(403).json({ error: "Forbidden" });
-    }
-    await db.query(`
-      INSERT INTO archive (id, title, description, price, location, category_id, seller_id, images, created_at, removed_at)
-      SELECT id, title, description, price, location, category_id, seller_id, images, created_at, NOW()
+    await client.query('BEGIN');
+    const itemRes = await client.query(
+      `
+      SELECT *
       FROM items
-      WHERE id = $1;
-    `, [id]);
-    await db.query('DELETE FROM items WHERE id = $1;', [id]);
-    await db.query('COMMIT;');
-    res.status(200).json({ message: 'Item successfully archived and deleted' });
+      WHERE id = $1 AND seller_id = $2
+      FOR UPDATE
+      `,
+      [id, userId]
+    );
+    if (itemRes.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Item not found or not authorized' });
+    }
+    const item = itemRes.rows[0];
+    await client.query(
+      `
+      INSERT INTO archive
+      (id, title, description, price, location, category_id, seller_id, created_at, images, removed_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+      `,
+      [
+        item.id,
+        item.title,
+        item.description,
+        item.price,
+        item.location,
+        item.category_id,
+        item.seller_id,
+        item.created_at,
+        item.images
+      ]
+    );
+    await client.query(
+      'DELETE FROM items WHERE id = $1',
+      [id]
+    );
+    await client.query('COMMIT');
+    res.json({ message: 'Item deleted and archived successfully' });
   }
   catch (err) {
-    await db.query('ROLLBACK;');
+    await client.query('ROLLBACK');
     console.error(err);
-    res.status(500).json({ error: 'Failed to delete and archive item' });
+    res.status(500).json({ error: 'Failed to delete item' });
+  }
+  finally {
+    client.release();
   }
 });
 
-app.post("/api/info", async (req, res) => {
-  const { id } = req.body;
-  if (!id) {
-    return res.status(400).json({ error: "Missing 'id' in request body" });
-  }
+// app.post("/api/info", async (req, res) => {
+//   const { id } = req.body;
+//   if (!id) {
+//     return res.status(400).json({ error: "Missing 'id' in request body" });
+//   }
+//   try {
+//     const item = await db.query('SELECT * FROM items JOIN user_data ON items.seller_id = user_data.id WHERE items.id = $1;', [id]);
+//     if (item.rows.length === 0) {
+//       return res.status(404).json({ error: "Post not found" });
+//     }
+//     res.json(item.rows[0]);
+//   }
+//   catch (error) {
+//     console.error('Error fetching listings:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+app.get('/api/items/:id', async (req, res) => {
   try {
-    const item = await db.query('SELECT * FROM items JOIN user_data ON items.seller_id = user_data.id WHERE items.id = $1;', [id]);
-    if (item.rows.length === 0) {
-      return res.status(404).json({ error: "Post not found" });
+    const result = await db.query(
+      `
+      SELECT
+        i.id, i.title, i.description, i.price, i.location, i.images, i.created_at,
+        ud.id   AS seller_id, ud.name AS seller_name
+      FROM items i
+      JOIN user_data ud ON i.seller_id = ud.id
+      WHERE i.id = $1;
+      `,
+      [req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Post not found' });
     }
-    res.json(item.rows[0]);
+    res.json(result.rows[0]);
   }
-  catch (error) {
-    console.error('Error fetching listings:', error);
+  catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+app.get('/api/items/:id/edit', requireAuth, async (req, res) => {
+  try {
+    const result = await db.query(
+      `
+      SELECT *
+      FROM items
+      WHERE id = $1 AND seller_id = $2;
+      `,
+      [req.params.id, req.user.sub]
+    );
+    if (result.rows.length === 0) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.patch('/api/items/:id', requireAuth, async (req, res) => {
+  const { title, description, price, location, category_id, images } = req.body;
+  try {
+    const result = await db.query(
+      `
+      UPDATE items
+      SET
+        title       = COALESCE($1, title),
+        description = COALESCE($2, description),
+        price       = COALESCE($3, price),
+        location    = COALESCE($4, location),
+        category_id = COALESCE($5, category_id),
+        images      = COALESCE($6, images)
+      WHERE id = $7 AND seller_id = $8
+      RETURNING id;
+      `,
+      [
+        title, description, price, location, category_id, images,
+        req.params.id, req.user.sub
+      ]
+    );
+    if (result.rowCount === 0) {
+      return res.status(403).json({ error: 'Not authorized or item not found' });
+    }
+    res.json({ message: 'Post updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
@@ -379,16 +480,27 @@ app.patch('/api/changedetails', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'Nothing to update' });
   }
   const id = req.user.sub;
+  const clean = (v) => (typeof v === 'string' && v.trim() !== '' ? v.trim() : null);
+
+  const newUsername = clean(username);
+  const newName = clean(name);
+  const newBio = clean(bio);
+
+  if (!newUsername && !newName && !newBio) {
+    return res.status(400).json({ error: 'Nothing to update' });
+  }
+
+  const client = await db.connect();
   try {
-    await db.query('BEGIN');
-    if (username) {
-      await db.query(
+    await client.query('BEGIN');
+    if (newUsername) {
+      await client.query(
         'UPDATE users SET username = $1 WHERE id = $2;',
-        [username, id]
+        [newUsername, id]
       );
     }
-    if (name || bio) {
-      await db.query(
+    if (newName || newBio) {
+      await client.query(
         `
         UPDATE user_data
         SET
@@ -396,19 +508,22 @@ app.patch('/api/changedetails', requireAuth, async (req, res) => {
           bio  = COALESCE($2, bio)
         WHERE id = $3;
         `,
-        [name, bio, id]
+        [newName, newBio, id]
       );
     }
-    await db.query('COMMIT');
+    await client.query('COMMIT');
     res.json({ message: 'Profile updated successfully.' });
   }
   catch (err) {
-    await db.query('ROLLBACK');
+    await client.query('ROLLBACK');
     if (err.code === '23505') {
       return res.status(409).json({ error: 'Username already taken.' });
     }
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
+  }
+  finally {
+    client.release();
   }
 });
 
@@ -496,26 +611,28 @@ app.post('/api/register', async (req, res) => {
   if (password !== repeatPassword) {
     return res.status(400).json({ error: 'Passwords do not match' });
   }
+  const client = await db.connect();
   try {
-    const existing = await db.query(
+    await client.query('BEGIN');
+    const existing = await client.query(
       'SELECT id FROM users WHERE email = $1;',
       [email]
     );
 
     if (existing.rows.length > 0) {
+      await client.query('ROLLBACK');
       return res.status(409).json({ error: 'Email is already registered' });
     }
     const hashedPass = await bcrypt.hash(password, 10);
-    await db.query('BEGIN');
-    const result = await db.query(
+    const result = await client.query(
       'INSERT INTO users(username, email, password_hash, region) VALUES($1, $2, $3, $4) RETURNING id;',
       [username, email, hashedPass, region || null]
     );
-    await db.query(
+    await client.query(
       'INSERT INTO user_data (id, name) VALUES($1, $2);',
       [result.rows[0].id, name]
     );
-    await db.query('COMMIT');
+    await client.query('COMMIT');
     const token = jwt.sign(
       { sub: result.rows[0].id },
       process.env.JWT_SECRET,
@@ -527,12 +644,14 @@ app.post('/api/register', async (req, res) => {
     });
   }
   catch (err) {
-    await db.query('ROLLBACK');
+    await client.query('ROLLBACK');
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
+  finally {
+    client.release();
+  }
 });
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
