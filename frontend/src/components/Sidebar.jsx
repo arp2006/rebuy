@@ -55,17 +55,30 @@ function Sidebar() {
     setSearchParams(params);
   }
 
+  const categories = [
+    { id: "1", label: "Electronics" },
+    { id: "2", label: "Books" },
+    { id: "3", label: "Games" },
+    { id: "4", label: "Furniture" },
+    { id: "5", label: "Toys" },
+    { id: "6", label: "Apparel" },
+    { id: "7", label: "Musical Instruments" },
+    { id: "8", label: "Shoes" },
+  ];
+
   return (
     <aside className="w-1/4 pr-8">
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-5 rounded-xl shadow border border-slate-100">
         <h3 className="text-lg font-bold text-[#0d171b] mb-4">Filters</h3>
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-[#0d171b]" htmlFor="location">
+            <label className="block text-sm font-bold text-[#0d171b]" htmlFor="location">
               Location
             </label>
             <select
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#3498DB] focus:border-[#3498DB] sm:text-sm rounded-md"
+              className="mt-1 block w-full h-10 px-3 text-sm border border-slate-300 rounded-md 
+              focus:outline-none focus:ring-0 focus:ring-blue-500 focus:border-[#3498DB]
+              bg-white"
               id="location"
               name="location"
               onChange={handleLocationChange}
@@ -81,71 +94,57 @@ function Sidebar() {
           <div>
             <h4 className="text-sm font-medium text-[#0d171b]">Category</h4>
             <div className="mt-2 space-y-2">
-              <div className="flex items-center">
-                <input id="1" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('1')} onChange={handleCategoryChange} />
-                <label htmlFor="1" className="ml-2 text-sm text-[#4c809a]">Electronics</label>
-              </div>
-              <div className="flex items-center">
-                <input id="2" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('2')} onChange={handleCategoryChange} />
-                <label htmlFor="2" className="ml-2 text-sm text-[#4c809a]">Books</label>
-              </div>
-              <div className="flex items-center">
-                <input id="3" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('3')} onChange={handleCategoryChange} />
-                <label htmlFor="3" className="ml-2 text-sm text-[#4c809a]">Games</label>
-              </div>
-              <div className="flex items-center">
-                <input id="4" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('4')} onChange={handleCategoryChange} />
-                <label htmlFor="4" className="ml-2 text-sm text-[#4c809a]">Furniture</label>
-              </div>
-              <div className="flex items-center">
-                <input id="5" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('5')} onChange={handleCategoryChange} />
-                <label htmlFor="5" className="ml-2 text-sm text-[#4c809a]">Toys</label>
-              </div>
-              <div className="flex items-center">
-                <input id="6" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('6')} onChange={handleCategoryChange} />
-                <label htmlFor="6" className="ml-2 text-sm text-[#4c809a]">Apparel</label>
-              </div>
-              <div className="flex items-center">
-                <input id="7" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('7')} onChange={handleCategoryChange} />
-                <label htmlFor="7" className="ml-2 text-sm text-[#4c809a]">Musical Instruments</label>
-              </div>
-              <div className="flex items-center">
-                <input id="8" name="category" type="checkbox" className="h-4 w-4 text-[#3498DB] focus:ring-[#3498DB] border-gray-300 rounded" checked={filters.categories.includes('8')} onChange={handleCategoryChange} />
-                <label htmlFor="8" className="ml-2 text-sm text-[#4c809a]">Shoes</label>
-              </div>
+              {categories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center gap-2 px-2 py-1 rounded-md
+                   hover:bg-slate-50 transition"
+                >
+                  <input
+                    id={cat.id}
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300
+                     text-[#3498DB] focus:ring-[#3498DB]"
+                    checked={filters.categories.includes(cat.id)}
+                    onChange={handleCategoryChange}
+                  />
+
+                  <label
+                    htmlFor={cat.id}
+                    className="text-sm text-[#4c809a] cursor-pointer select-none"
+                  >
+                    {cat.label}
+                  </label>
+                </div>
+              ))}
             </div>
           </div>
+
           <div>
             <h4 className="text-sm font-medium text-[#0d171b]">Price Range</h4>
-            <div className="mt-2 flex items-center space-x-2">
+            <div className="mt-2 grid grid-cols-2 gap-2">
               <input
-                className="w-full border-gray-300 rounded-md shadow-sm focus:border-[#3498DB] focus:ring-[#3498DB] sm:text-sm"
+                className="h-10 px-3 border border-slate-300 rounded-md text-sm
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Min"
-                type="number"
-                onChange={handleChange}
-                name="priceL"
-                value={filters.priceL}
               />
-              <span>-</span>
               <input
-                className="w-full border-gray-300 rounded-md shadow-sm focus:border-[#3498DB] focus:ring-[#3498DB] sm:text-sm"
+                className="h-10 px-3 border border-slate-300 rounded-md text-sm
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Max"
-                type="number"
-                onChange={handleChange}
-                name="priceU"
-                value={filters.priceU}
               />
             </div>
+
           </div>
           <div className="flex space-x-2">
             <button
-              className="flex-1 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+              className="flex-1 h-9 rounded-md bg-[#3498DB] cursor-pointer text-white text-sm font-medium hover:bg-[#0a6bab] transition"
               onClick={applyFilters}
             >
               <span className="truncate">Apply</span>
             </button>
             <button
-              className="flex-1 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em]"
+              className="flex-1 h-9 rounded-md bg-slate-100 text-slate-700 cursor-pointer text-sm font-medium hover:bg-slate-200 transition"
               onClick={clearFilters}
             >
               <span className="truncate">Clear</span>

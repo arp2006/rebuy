@@ -248,14 +248,14 @@ function Create() {
             <div className="flex justify-end gap-4 mt-12 pt-6 border-t border-[#e7eff3]">
               <button
                 type="button"
-                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#4c809a] gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#e7eff3]"
+                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-black gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#e7eff3]"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#0d171b] text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#2c3e44]"
+                className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-[#3498DB] text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6 hover:bg-[#0a6bab] transition"
               >
                 {loading ? "Posting..." : "Post Listing"}
               </button>

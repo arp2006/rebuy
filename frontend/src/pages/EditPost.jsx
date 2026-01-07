@@ -311,7 +311,7 @@ function EditPost() {
                 type="button"
                 onClick={() => { setShowDeleteModal(true) }}
                 disabled={saving}
-                className="h-12 px-6 rounded-lg bg-red-500 text-white"
+                className="h-12 px-6 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
               >
                 Delete post
               </button>
@@ -379,7 +379,7 @@ function EditPost() {
                   <button
                     type="button"
                     onClick={handleDelete}
-                    className="px-4 py-2 rounded-md bg-red-600 text-white text-sm"
+                    className="px-4 py-2 rounded-md bg-red-400 text-white text-sm hover:bg-red-600 transition"
                   >
                     Delete
                   </button>

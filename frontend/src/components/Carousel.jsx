@@ -28,7 +28,7 @@ export default function Carousel({ images = [] }) {
       <div className="absolute inset-0 flex items-center justify-between p-4">
         <button
           onClick={prev}
-          className="p-1 rounded-full shadow bg-[#13a4ec] text-black-800 hover:bg-[#0b8acb] transition-colors"
+          className="p-1 rounded-full shadow bg-[#13a4ec] text-black-800 hover:bg-[#0a6bab] transition-colors"
         >
           <ChevronLeft size={40} className="text-white"/>
         </button>

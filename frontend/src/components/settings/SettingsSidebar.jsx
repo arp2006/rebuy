@@ -74,7 +74,7 @@ function SettingsSidebar() {
         <div className="border-t pt-4">
           {user ?
             <button
-              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-colors"
+              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-red-400 text-white text-sm font-bold hover:bg-red-600 transition-colors"
               onClick={handleLogoutClick}
             >
               <span className="material-symbols-outlined text-[18px]">
@@ -84,7 +84,7 @@ function SettingsSidebar() {
             </button>
             :
             <button
-              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-blue-50 text-blue-600 text-sm font-bold hover:bg-blue-100 transition-colors"
+              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-[#3498DB] text-white text-sm font-bold hover:bg-[#0a6bab] transition"
               onClick={() => navigate("/login")}
             >
               <span>Login</span>

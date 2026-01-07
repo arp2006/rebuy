@@ -8,7 +8,7 @@ function NotFound() {
       <h1 className="text-3xl font-bold text-[#0f172a]">404</h1>
       <p className="text-[#64748b]">This page doesn’t exist.</p>
       <button
-        className="px-4 py-2 rounded-lg bg-[#3498DB] text-white font-semibold"
+        className="px-4 py-2 rounded-lg bg-[#3498DB] text-white font-semibold hover:bg-[#0a6bab] transition"
         onClick={() => navigate("/")}
       >
         Go Home

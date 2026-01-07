@@ -51,7 +51,7 @@ function Success() {
                 </div>
                 <div className="mt-10 flex justify-center">
                   <button
-                    className="bg-[#13a4ec] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#118ac9] transition-colors"
+                    className="bg-[#13a4ec] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#0a6bab] transition"
                     onClick={() => navigate("/")}
                   >
                     Go to Home Now

@@ -31,7 +31,7 @@ function Header() {
       if (!response.ok) throw new Error("Failed to fetch user info");
       const data = await response.json();
       setUserInfo(data);
-    } 
+    }
     catch (error) {
       console.error("Failed to fetch user info:", error);
     }
@@ -65,7 +65,9 @@ function Header() {
               onChange={(e) => { setSearch(e.target.value) }}
             />
             <div className="flex items-center justify-center rounded-r-lg border-l-0 border border-[#cfdfe7] bg-slate-50 pr-1">
-              <button className="flex min-w-[70px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 px-3 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]" type="submit" >
+              <button 
+                className="flex min-w-[70px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-8 px-3 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#0a6bab] transition"
+                type="submit" >
                 <span className="truncate">Search</span>
               </button>
             </div>
@@ -76,18 +78,18 @@ function Header() {
         {loading ? null : user ? (
           <>
             <Link to="/create" className="text-[#0d171b] text-sm font-medium leading-normal">Sell an Item</Link>
-            <AccDropdown u={userInfo}/>
+            <AccDropdown u={userInfo} />
           </>
         ) : (
           <div className="flex gap-2">
             <button
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#0a6bab] transition"
               onClick={() => navigate("/login")}
             >
               <span className="truncate">Login</span>
             </button>
             <button
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em]"
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-200 transition"
               onClick={() => navigate("/register")}
             >
               <span className="truncate">Register</span>

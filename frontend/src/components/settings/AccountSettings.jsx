@@ -151,13 +151,13 @@ function AccountSettings() {
             </div>
             <div className="flex flex-rows gap-3">
               <button
-                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#0a6bab] transition"
                 onClick={handleUpdate}
               >
                 {loading ? 'Updating...' : update}
               </button>
               <button
-                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em]"
+                className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7eff3] text-[#0d171b] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-200 transition"
                 onClick={fetchDetails}
               >
                 Reset

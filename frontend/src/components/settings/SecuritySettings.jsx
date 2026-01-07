@@ -176,10 +176,10 @@ function SecuritySettings() {
             {error && <p className="text-left text-red-600">{error}</p>}
             {success && <p className="text-sm font-semibold text-[#0f172a]">{success}</p>}
             <button
-              className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+              className="flex min-w-[54px] max-w-[80px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#3498DB] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-200 transition"
               onClick={passwordChange}
             >
-              {loading ? 'Updating...' : "update"}
+              {loading ? 'Updating...' : "Update"}
             </button>
           </div>
         </section>
