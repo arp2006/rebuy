@@ -29,7 +29,8 @@ function auth(req, res, next) {
     console.log("JWT DECODED PAYLOAD:", decoded);
     req.user = decoded;
     next();
-  } catch (e) {
+  } 
+  catch (e) {
     console.log("JWT VERIFY ERROR:", e.message);
     req.user = null;
     next();
