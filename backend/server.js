@@ -139,11 +139,21 @@ app.post("/api/listings", async (req, res) => {
 });
 
 app.post("/api/search", async (req, res) => {
-  const { uid, searchQuery, location, minP, maxP, categories } = req.body;
+  const { searchQuery, location, minP, maxP, categories } = req.body;
   try {
-    let qText = `SELECT * FROM items WHERE seller_id != $1 AND (title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%') `;
-    let qParams = [uid, searchQuery];
-    let i = 3;
+    const uid = req.user?.sub;
+    let qText = `SELECT * FROM items WHERE `;
+    let qParams = [];
+    let i = 2;
+    if(uid) {
+      qText += `seller_id != $1 AND`;
+      qParams = [uid, searchQuery];
+    } 
+    else {
+      i = 1
+      qParams = [searchQuery];
+    }
+    qText += `(title ILIKE '%' || $${i} || '%' OR description ILIKE '%' || $${i++} || '%') `
     if (location) {
       qText += `AND location = $${i++} `;
       qParams.push(location);
@@ -161,6 +171,8 @@ app.post("/api/search", async (req, res) => {
       qParams.push(categories);
     }
     qText += ';';
+    console.log(qText);
+    console.log(qParams);
     const posts = await db.query(qText, qParams);
     res.json(posts.rows);
   }

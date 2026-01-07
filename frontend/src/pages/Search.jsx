@@ -3,7 +3,6 @@ import Item from "../components/Item";
 import { useSearchParams } from "react-router-dom";
 
 function Home() {
-  const id = localStorage.getItem('userId');
   const [posts, setPosts] = useState([]);
   const [searchParams ] = useSearchParams();
   const query = searchParams.get('query');
@@ -18,7 +17,7 @@ function Home() {
       const response = await fetch('http://localhost:3000/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: id, searchQuery: query, location: location, minP: min, maxP: max, categories: categories }),
+        body: JSON.stringify({ searchQuery: query, location: location, minP: min, maxP: max, categories: categories }),
       });
       if (!response.ok) throw new Error('Failed to fetch posts');
       const postsData = await response.json();
