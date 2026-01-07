@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { AuthContext } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 
-function AccDropdown() {
+function AccDropdown({ u }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout } = useContext(AuthContext);
@@ -13,12 +13,13 @@ function AccDropdown() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
       }
+      
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {    
+  const handleLogout = () => {
     logout();
     navigate('/login');
   };
@@ -26,6 +27,7 @@ function AccDropdown() {
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Button */}
+      
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center text-sm pe-1 font-medium text-heading rounded-full hover:text-fg-brand md:me-0 focus:ring-4 focus:ring-neutral-tertiary"
@@ -37,7 +39,7 @@ function AccDropdown() {
           src="/docs/images/people/profile-picture-5.jpg"
           alt="user"
         /> */}
-        {user.name}
+        {u.name}
         <svg
           className="w-4 h-4 ms-2"
           xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +68,7 @@ function AccDropdown() {
               /> */}
               <div>
                 <div className="font-medium text-heading">
-                  {user.name}
+                  {u.name}
                 </div>
               </div>
               {/* <span className="ms-auto bg-brand-softer border border-brand-subtle text-fg-brand-strong text-xs px-1.5 py-0.5 rounded">

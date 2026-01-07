@@ -5,12 +5,11 @@ import { AuthContext } from "../AuthContext";
 import AccDropdown from "./AccDropdown";
 
 function Header() {
-  const { user , loading } = useContext(AuthContext);
-  // const ctx = useContext(AuthContext);
-  // console.log("AUTH CONTEXT:", ctx);
-
+  const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+
+  const [userInfo, setUserInfo] = useState(null);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +17,29 @@ function Header() {
       navigate(`/search?query=${encodeURIComponent(search.trim())}`);
     }
   };
+
+  const getInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const response = await fetch("http://localhost:3000/api/info", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch user info");
+      const data = await response.json();
+      setUserInfo(data);
+    } 
+    catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    getInfo();
+  }, []);
 
   return (
     <header className="fixed w-full top-0 left-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7eff3] px-10 py-3 bg-white">
@@ -54,7 +76,7 @@ function Header() {
         {loading ? null : user ? (
           <>
             <Link to="/create" className="text-[#0d171b] text-sm font-medium leading-normal">Sell an Item</Link>
-            <AccDropdown />
+            <AccDropdown u={userInfo}/>
           </>
         ) : (
           <div className="flex gap-2">

@@ -19,14 +19,11 @@ const upload = multer({ dest: 'temp/' });
 function auth(req, res, next) {
   const header = req.headers.authorization;
   console.log("AUTH HEADER:", header);
-
   if (!header) {
     req.user = null;
     return next();
   }
-
   const token = header.split(" ")[1];
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("JWT DECODED PAYLOAD:", decoded);
@@ -56,97 +53,32 @@ cloudinary.v2.config({
   api_secret: 'vTCiWElpI42wvCPj3d_QCyqaKnA',
 });
 
-function verifyToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) {
-    req.userId = 8;
-    console.log("No header, defaulting to guest");
-    return next();
-  }
-
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    req.userId = 8;
-    console.log("No token found, defaulting to guest");
-    return next();
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      console.log("JWT error:", err);
-      if (err.name === "TokenExpiredError") {
-        req.userId = 8;
-        console.log("Expired token, guest mode");
-        return next();
-      }
-      return res.status(403).json({ error: 'Invalid token' });
-    }
-    req.userId = decoded.userId;
-    req.email = decoded.email;
-    next();
-  });
-}
-
-
-// function verifyToken(req, res, next) {
-//   const authHeader = req.headers['authorization'];
-//   if (!authHeader) {
-//     req.userId = 8;
-//     return next();
-//   }
-
-//   const token = authHeader.split(' ')[1];
-//   if (!token) {
-//     req.userId = 8;
-//     return next();
-//   }
-
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//     if (err) {
-//       if (err.name === "TokenExpiredError") {
-//         req.userId = 8;
-//         next();
-//       } else {
-//         return res.status(403).json({ error: 'Invalid token' });
-//       }
-//     } else {
-//       req.userId = decoded.userId;
-//       req.email = decoded.email;
-//       next();
-//     }
-//   });
-// }
-
-// function verifyToken(req, res, next) {
-//   const authHeader = req.headers['authorization'];
-//   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
-//   const token = authHeader.split(' ')[1];
-//   if (!token) return res.status(401).json({ error: 'Malformed token' });
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//     if (err) return res.status(403).json({ error: 'Invalid token' });
-//     req.userId = decoded.userId;
-//     req.email = decoded.email;
-//     next();
-//   });
-// }
-// app.get('/api/profile', requireAuth, async (req, res) => {
-//   try {
-//     const result = await db.query('SELECT id, name, email FROM users WHERE id = $1;', [req.user.sub]);
-//     if (result.rows.length === 0)
-//       return res.status(401).json({ error: 'Unauthorized' });
-//     res.json(result.rows[0]);
-//   } 
-//   catch (err) {
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
 function requireAuth(req, res, next) {
   if (!req.user) {
     return res.status(401).json({ error: "Login required" });
   }
   next();
 }
+
+app.get("/api/info", requireAuth, async (req, res) => {
+  try {
+    const result = await db.query(
+      `
+        SELECT ud.name, u.email, u.username
+        FROM users u
+        JOIN user_data ud
+          ON u.id = ud.id
+        WHERE u.id = $1;
+      `,
+      [req.user.sub]
+    );
+    res.json(result.rows[0]); 
+  }
+  catch (error) {
+    console.error("Error fetching user info: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.get("/api/me", async (req, res) => {
   if (!req.user) {
@@ -258,6 +190,7 @@ app.post("/api/archive", requireAuth, async (req, res) => {
   catch (error) {
     console.error('Error fetching listings:', error);
     res.status(500).json({ error: 'Internal server error' });
+
   }
 });
 
@@ -316,24 +249,6 @@ app.delete('/api/items/:id', requireAuth, async (req, res) => {
   }
 });
 
-// app.post("/api/info", async (req, res) => {
-//   const { id } = req.body;
-//   if (!id) {
-//     return res.status(400).json({ error: "Missing 'id' in request body" });
-//   }
-//   try {
-//     const item = await db.query('SELECT * FROM items JOIN user_data ON items.seller_id = user_data.id WHERE items.id = $1;', [id]);
-//     if (item.rows.length === 0) {
-//       return res.status(404).json({ error: "Post not found" });
-//     }
-//     res.json(item.rows[0]);
-//   }
-//   catch (error) {
-//     console.error('Error fetching listings:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
 app.get('/api/items/:id', async (req, res) => {
   try {
     const result = await db.query(
@@ -341,9 +256,9 @@ app.get('/api/items/:id', async (req, res) => {
       SELECT
         i.id, i.title, i.description, i.price, i.location, i.images, i.created_at,
         ud.id   AS seller_id, ud.name AS seller_name
-      FROM items i
-      JOIN user_data ud ON i.seller_id = ud.id
-      WHERE i.id = $1;
+        FROM items i
+        JOIN user_data ud ON i.seller_id = ud.id
+        WHERE i.id = $1;
       `,
       [req.params.id]
     );
@@ -408,7 +323,6 @@ app.patch('/api/items/:id', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 app.post('/api/upload-images', upload.array('images', 5), async (req, res) => {
   try {
@@ -567,7 +481,6 @@ app.patch('/api/changepassword', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error.' });
   }
 });
-
 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
