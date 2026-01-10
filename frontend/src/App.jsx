@@ -17,6 +17,7 @@ import RequireAuth from './RequireAuth';
 import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 import EditPost from './pages/EditPost';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/privacypolicy" element={<Privacy />} />
           <Route path="/settings/:page" element={ <SettingsPage /> } />
           <Route path="/edit/:id" element={ <EditPost /> } />
+          <Route path="/profile/:id" element={ <Profile /> } />
           <Route element={<RequireAuth/>}>
             <Route path="/create" element={<Create />} />
             <Route path="/account" element={<Account />} />

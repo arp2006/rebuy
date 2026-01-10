@@ -38,8 +38,9 @@ function Header() {
   };
 
   useEffect(() => {
-    getInfo();
-  }, []);
+    if(user)
+      getInfo();
+  }, [user]);
 
   return (
     <header className="fixed w-full top-0 left-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7eff3] px-10 py-3 bg-white">

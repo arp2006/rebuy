@@ -81,6 +81,45 @@ app.get("/api/info", requireAuth, async (req, res) => {
   }
 });
 
+app.get("/api/users/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ error: "Missing user id" });
+  }
+  try {
+    const result = await db.query(
+      `
+        SELECT ud.name, u.username
+        FROM users u
+        JOIN user_data ud
+          ON u.id = ud.id
+        WHERE u.id = $1;
+      `,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result.rows[0]); 
+  }
+  catch (error) {
+    console.error("Error fetching user info: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/users/:id/listings", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const posts = await db.query('SELECT * FROM items WHERE seller_id = $1;', [id]);
+    res.json(posts.rows);
+  }
+  catch (error) {
+    console.error('Error fetching listings:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get("/api/me", async (req, res) => {
   if (!req.user) {
     return res.json({ user: null });
