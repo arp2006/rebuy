@@ -94,8 +94,8 @@ function AccountSettings() {
         </p>
       </div>
       <div className="relative">
-        <section className={`bg-white rounded-xl border shadow-sm overflow-hidden transistion ${!user ? "blur-sm pointer-events-none select-none" : ""}`}>
-          <div className="px-6 py-4 border-b flex justify-between items-center">
+        <section className={`bg-white rounded-xl shadow-sm overflow-hidden transistion ${!user ? "blur-sm pointer-events-none select-none" : ""}`}>
+          <div className="px-6 py-4 border-b border-[#cfdfe7] flex justify-between items-center">
             <h2 className="text-lg font-bold text-[#0f172a]">
               Public Profile
             </h2>
@@ -167,7 +167,7 @@ function AccountSettings() {
         </section>
         {!user && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-white/80 backdrop-blur-sm px-6 py-4 rounded-lg border shadow text-center">
+            <div className="bg-white/80 backdrop-blur-sm px-6 py-4 rounded-lg shadow text-center">
               <p className="text-sm font-semibold text-[#0f172a]">
                 Please log in to edit your profile
               </p>

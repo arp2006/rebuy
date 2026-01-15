@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate, redirect } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import { AuthContext } from "../AuthContext";
 
-function Product() {
+function ArchivedPost() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [post, setPost] = useState({});
@@ -142,4 +142,4 @@ function Product() {
   );
 }
 
-export default Product;
+export default ArchivedPost;

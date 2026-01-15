@@ -12,7 +12,7 @@ function SettingsSidebar() {
 
   return (
     <aside className="w-full md:w-64 lg:w-72 flex-shrink-0">
-      <div className="bg-white rounded-xl p-4 shadow-sm border sticky top-24">
+      <div className="bg-white rounded-xl p-4 shadow-sm sticky top-24">
         {/* <div className="flex items-center gap-3 mb-6 p-2">
           <div
             className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
@@ -32,11 +32,11 @@ function SettingsSidebar() {
           </div>
         </div> */}
 
-        <nav className="flex flex-col gap-1 mb-6">
+        <nav className="flex flex-col gap-1 mb-2.5">
           <button
             type="button"
             onClick={() => navigate("/settings/account")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
+            className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
           >
             <span className="material-symbols-outlined text-[20px]">person</span>
             <span className="text-sm font-medium">Account Settings</span>
@@ -45,7 +45,7 @@ function SettingsSidebar() {
           <button
             type="button"
             onClick={() => navigate("/settings/security")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
+            className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
           >
             <span className="material-symbols-outlined text-[20px]">lock</span>
             <span className="text-sm font-medium">Security</span>
@@ -54,7 +54,7 @@ function SettingsSidebar() {
           <button
             type="button"
             onClick={() => navigate("/settings/appearance")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
+            className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
           >
             <span className="material-symbols-outlined text-[20px]">visibility</span>
             <span className="text-sm font-medium">Appearance</span>
@@ -63,7 +63,7 @@ function SettingsSidebar() {
           <button
             type="button"
             onClick={() => navigate("/settings/support")}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
+            className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg text-[#0f172a] hover:bg-gray-100 transition-colors w-full text-left"
           >
             <span className="material-symbols-outlined text-[20px]">help</span>
             <span className="text-sm font-medium">Support</span>
@@ -71,10 +71,10 @@ function SettingsSidebar() {
         </nav>
 
 
-        <div className="border-t pt-4">
+        <div className="border-t border-[#cfdfe7] pt-4">
           {user ?
             <button
-              className="flex w-full items-center justify-center gap-2 rounded-lg h-10 bg-red-400 text-white text-sm font-bold hover:bg-red-600 transition-colors"
+              className="flex w-full items-center justify-center gap-2 cursor-pointer rounded-lg h-10 bg-red-500 text-white text-sm font-bold hover:text-white transition-colors"
               onClick={handleLogoutClick}
             >
               <span className="material-symbols-outlined text-[18px]">

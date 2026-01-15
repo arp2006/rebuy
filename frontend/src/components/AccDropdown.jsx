@@ -33,7 +33,7 @@ function AccDropdown({ u }) {
       
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center text-sm pe-1 font-medium text-heading rounded-full hover:text-fg-brand md:me-0 focus:ring-4 focus:ring-neutral-tertiary"
+        className="flex items-center text-sm pe-1 font-medium text-heading rounded-full md:me-0 focus:ring-4 focus:ring-neutral-tertiary"
         type="button"
       >
         <span className="sr-only">Open user menu</span>
@@ -61,8 +61,8 @@ function AccDropdown({ u }) {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 z-10 bg-white border border-default-medium rounded-base shadow-lg w-50">
-          <div className="p-2 pb-0">
+        <div className="absolute right-0 mt-2 z-10 bg-white shadow-lg rounded-md rounded-base shadow-lg w-50">
+          <div className="p-3 cursor-default pb-0">
             <div className="flex items-center p-2 bg-neutral-secondary-strong rounded">
               {/* <img
                 className="w-8 h-8 rounded-full"
@@ -80,12 +80,7 @@ function AccDropdown({ u }) {
             </div>
           </div>
 
-          <ul className="px-2 pb-2 text-sm font-medium text-body">
-            <li>
-              <p className="flex items-center w-full p-2 rounded cursor-pointer hover:bg-gray-100" >
-                Dark mode *
-              </p>
-            </li>
+          <ul className="px-3 pb-3 text-sm font-medium text-body">
             <li>
               <a
                 onClick={() => navigate("/account")}
@@ -97,7 +92,7 @@ function AccDropdown({ u }) {
             <li>
               <a
                 onClick={() => navigate("/settings/account")}
-                className="flex items-center w-full p-2 rounded cursor-pointer hover:bg-gray-100"
+                className="flex items-center w-full p-2 mb-1.5 rounded cursor-pointer hover:bg-gray-100"
               >
                 Settings
               </a>
@@ -105,7 +100,7 @@ function AccDropdown({ u }) {
             <li className="border-t border-default-medium pt-1.5">
               <a
                 onClick={handleLogout}
-                className="flex items-center w-full p-2 rounded bg-red-500 cursor-pointer hover:text-white"
+                className="flex items-center w-full p-2 rounded text-white bg-red-500 cursor-pointer hover:text-black"
               >
                 Log Out
               </a>

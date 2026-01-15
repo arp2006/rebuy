@@ -229,9 +229,9 @@ function EditPost() {
 
               {/* -------- images -------- */}
               <div className="flex flex-col space-y-6">
-                <label className="flex flex-col">
+                <label className="flex flex-col  min-w-40">
                   <p className="text-base font-medium pb-2">Upload Images</p>
-                  <div className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg">
+                  <div className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg border-[#cfdfe7]">
                     <input
                       className="absolute inset-0 opacity-0 cursor-pointer"
                       multiple
@@ -239,7 +239,7 @@ function EditPost() {
                       accept="image/*"
                       onChange={handleImages}
                     />
-                    <span className="material-symbols-outlined text-4xl">
+                    <span className="material-symbols-outlined text-4xl text-[#4c809a]">
                       upload_file
                     </span>
                   </div>
@@ -259,7 +259,7 @@ function EditPost() {
             </div>
 
             {/* -------- price / category / location -------- */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4 border-t">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4 border-t border-[#cfdfe7]">
               <label className="flex flex-col">
                 <p className="text-base font-medium pb-2">Price</p>
                 <div className="relative">
@@ -305,7 +305,7 @@ function EditPost() {
             )}
 
             {/* -------- actions -------- */}
-            <div className="flex items-center justify-between pt-6 border-t">
+            <div className="flex items-center justify-between pt-6 border-t border-[#cfdfe7]">
               {/* LEFT: destructive action */}
               <button
                 type="button"
