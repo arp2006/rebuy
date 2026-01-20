@@ -86,7 +86,7 @@ function Profile() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          ["42", "inventory_2", "Active Listings"],
+          [posts.length, "inventory_2", "Active Listings"],
           // ["4.9", "reviews", "User Rating"],
           // ["128", "shopping_cart_checkout", "Items Sold"],
           // ["12", "group", "Followers"],

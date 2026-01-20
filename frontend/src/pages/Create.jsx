@@ -72,7 +72,9 @@ function Create() {
     setLoading(true);
     try {
       const imageUrls = await uploadImages();
-      const payload = { ...form, imageUrls, uid: id };
+      const payload = { ...form, imageUrls };
+      console.log(payload);
+      
       const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:3000/api/create', {
         method: 'POST',
@@ -235,6 +237,7 @@ function Create() {
                     placeholder="e.g., Mumbai"
                     value={form.location}
                     name="location"
+                    onChange={handleChange}
                   />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c809a]">
                     location_on

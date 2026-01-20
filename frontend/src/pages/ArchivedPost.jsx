@@ -14,7 +14,7 @@ function ArchivedPost() {
 
   const getInfo = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/items/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/archived-posts/${id}`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
       });
@@ -107,32 +107,24 @@ function ArchivedPost() {
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white p-6 rounded-lg border border-slate-200">
             <h2 className="text-[#0d171b] tracking-light text-[36px] font-bold leading-tight"> ₹{[post.price]}</h2>
-            <div className="mt-4 flex flex-col gap-3">
+            {/* <div className="mt-4 flex flex-col gap-3">
               <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-[#13a4ec] text-slate-50 text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#0b8acb] transition-colors">
                 <span className="material-symbols-outlined">chat_bubble</span>
                 <span className="truncate">Chat with Seller</span>
               </button>
-              {/* <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-slate-200 text-slate-900 text-base font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 transition-colors">
+              <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-slate-200 text-slate-900 text-base font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 transition-colors">
                 <span className="material-symbols-outlined">favorite_border</span>
                 <span className="truncate">Add to Favorites</span>
-              </button> */}
-            </div>
+              </button>
+            </div> */}
           </div>
 
           <div className="bg-white p-6 rounded-lg border border-slate-200">
-            <h3 className="text-[#0d171b] text-lg font-bold">Seller Information</h3>
+            <h3 className="text-[#0d171b] text-lg font-bold">Add removed on-</h3>
 
             <div className="mt-4 flex items-center justify-between">
               <p className="font-bold text-[#0d171b]">{post.seller_name}</p>
-              {!user || post.seller_id !== user.id ? <></> : (
-                <button 
-                  onClick={() => navigate(`/edit/${post.id}`)} 
-                  className="px-4 py-2  bg-[#13a4ec] cursor-pointer text-white rounded-md text-sm hover:bg-[#0b8acb]" 
-                >
-                  Edit Post
-                </button>)}
             </div>
-            <Link to={`/profile/${post.seller_id}`} className="mt-4 inline-block text-[#13a4ec] hover:underline text-sm font-medium">View Seller's Other Items</Link>
           </div>
 
         </div>
