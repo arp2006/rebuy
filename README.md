@@ -55,8 +55,8 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 ---
 
 ## Project Structure
-
 ```
+subject to change
 project-root/
 │
 ├── backend/
