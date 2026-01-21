@@ -48,8 +48,6 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 
 * Production deployment
 * Live chat implementation
-* Improved error handling
-* UI consistency fixes
 
 ---
 
