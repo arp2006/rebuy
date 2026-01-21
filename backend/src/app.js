@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
 import auth from "./middleware/auth.js";
 
@@ -8,8 +7,6 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import itemRoutes from "./routes/item.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
-
-dotenv.config();
 
 const app = express();
 
@@ -23,7 +20,6 @@ app.use("/api", itemRoutes);
 app.use("/api", uploadRoutes);
 
 export default app;
-
 
 
 // import express from "express";
@@ -565,7 +561,6 @@ export default app;
 //       process.env.JWT_SECRET,
 //       { expiresIn: '1h' }
 //     );
-
 //     res.status(200).json({ user: userData, token });
 //   }
 //   catch (err) {

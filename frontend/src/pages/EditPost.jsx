@@ -311,7 +311,7 @@ function EditPost() {
                 type="button"
                 onClick={() => { setShowDeleteModal(true) }}
                 disabled={saving}
-                className="h-12 px-6 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                className="h-12 px-6 rounded-lg bg-red-500 text-white cursor-pointer hover:bg-red-600 transition"
               >
                 Delete post
               </button>
@@ -320,7 +320,7 @@ function EditPost() {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="h-12 px-6 rounded-lg text-[#4c809a]"
+                  className="h-12 px-6 rounded-lg cursor-pointer text-[#4c809a] hover:underline"
                 >
                   Cancel
                 </button>
@@ -328,14 +328,14 @@ function EditPost() {
                   type="button"
                   onClick={handleReset}
                   disabled={!hasChanges || saving}
-                  className="h-12 px-6 rounded-lg bg-[#e7eff3] text-black"
+                  className="h-12 px-6 rounded-lg bg-[#e7eff3] cursor-pointer text-black hover:bg-slate-200 transition"
                 >
                   Reset
                 </button>
                 <button
                   type="submit"
                   disabled={!hasChanges || saving}
-                  className="h-12 px-6 rounded-lg bg-[#3498DB] text-white"
+                  className="h-12 px-6 rounded-lg bg-[#3498DB] cursor-pointer text-white hover:bg-[#0a6bab] transition"
                 >
                   {saving ? "Saving..." : "Save Changes"}
                 </button>
@@ -355,7 +355,7 @@ function EditPost() {
               User: {post.name}
             </p>
             <input
-              className="form-input w-full my-4 rounded-lg border bg-slate-50 p-3"
+              className="form-input w-full my-4 rounded-lg bg-slate-50 p-3"
               placeholder="Password"
               type="password"
               value={deletePassword}
@@ -372,14 +372,14 @@ function EditPost() {
                       setDeletePassword("");
                       setError("");
                     }}
-                    className="px-4 py-2 rounded-md border text-sm"
+                    className="px-4 py-2 rounded-md text-sm cursor-pointer hover:underline"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleDelete}
-                    className="px-4 py-2 rounded-md bg-red-400 text-white text-sm hover:bg-red-600 transition"
+                    className="px-4 py-2 rounded-md bg-red-600 text-white text-sm cursor-pointer hover:bg-red-400 transition"
                   >
                     Delete
                   </button>

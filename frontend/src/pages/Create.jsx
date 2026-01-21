@@ -34,7 +34,7 @@ function Create() {
   };
 
   useEffect(() => {
-    if(!user) {
+    if (!user) {
       navigate("/login");
     }
     return () => {
@@ -42,26 +42,26 @@ function Create() {
     };
   }, [imagePreviews, navigate]);
 
-  // useEffect(()=>{
-  //   if (id==8) {
-  //     navigate("/login", { replace: true });
-  //   }
-  // }, [ navigate]);
-
   const uploadImages = async () => {
     if (images.length === 0) return [];
 
-    const formData = new FormData();
-    images.forEach(img => formData.append('images', img));
+    const token = localStorage.getItem("token");
 
-    const res = await fetch('http://localhost:3000/api/upload-images', {
-      method: 'POST',
+    const formData = new FormData();
+    images.forEach(img => formData.append("images", img));
+
+    const res = await fetch("http://localhost:3000/api/upload-images", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     });
 
     if (!res.ok) {
-      throw new Error('Image upload failed');
+      throw new Error("Image upload failed");
     }
+
     const data = await res.json();
     return data.imageUrls;
   };
@@ -73,12 +73,12 @@ function Create() {
     try {
       const imageUrls = await uploadImages();
       const payload = { ...form, imageUrls };
-      console.log(payload);
-      
+      // console.log(payload);
+
       const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:3000/api/create', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
