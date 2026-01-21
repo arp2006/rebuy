@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Item from "../components/Item";
+import { AuthContext } from "../AuthContext";
 
 function Profile() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [profile, setProfile] = useState();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const getInfo = async () => {
     const res = await fetch(`http://localhost:3000/api/users/${id}`);
@@ -75,10 +78,13 @@ function Profile() {
                 Create Listing
               </span>
             </button> */}
-
-            <button className="min-w-[140px] h-11 px-6 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50">
+            { user.id == id &&
+            <button 
+              className="min-w-[140px] h-11 px-6 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold cursor-pointer hover:bg-slate-50"
+              onClick={() => navigate('/settings/account')}
+            >
               Manage Account
-            </button>
+            </button>}
           </div>
         </div>
       </div>
