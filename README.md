@@ -48,27 +48,61 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 
 * Production deployment
 * Live chat implementation
-* Split backend into routes/controllers/services
 * Improved error handling
 * UI consistency fixes
 
 ---
 
+## Future Improvements Implemented
+
+* Split backend into routes/controllers/services 
+* Improved error handling
+* UI consistency fixes
+
 ## Project Structure
 ```
-subject to change
 project-root/
+│
+├── README.md
 │
 ├── backend/
 │   ├── node_modules/
 │   ├── temp/
+│   │
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── cloudinary.js
+│   │   │   └── db.js
+│   │   │
+│   │   ├── controllers/
+│   │   │   ├── auth.controller.js
+│   │   │   ├── item.controller.js
+│   │   │   ├── upload.controller.js
+│   │   │   └── user.controller.js
+│   │   │
+│   │   ├── middleware/
+│   │   │   ├── auth.js
+│   │   │   └── requireAuth.js
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js
+│   │   │   ├── item.routes.js
+│   │   │   ├── upload.routes.js
+│   │   │   └── user.routes.js
+│   │   │
+│   │   ├── services/
+│   │   │   ├── auth.service.js
+│   │   │   ├── item.service.js
+│   │   │   └── user.service.js
+│   │   │
+│   │   ├── app.js
+│   │   └── server.js
+│   │
 │   ├── .env
 │   ├── package.json
-│   ├── package-lock.json
-│   └── server.js
+│   └── package-lock.json
 │
 ├── frontend/
-│   ├── node_modules/
 │   ├── public/
 │   │   └── styles.css
 │   │
@@ -94,6 +128,7 @@ project-root/
 │   │   ├── pages/
 │   │   │   ├── AboutUs.jsx
 │   │   │   ├── Account.jsx
+│   │   │   ├── ArchivedPost.jsx
 │   │   │   ├── Contact.jsx
 │   │   │   ├── Create.jsx
 │   │   │   ├── EditPost.jsx
@@ -113,7 +148,7 @@ project-root/
 │   │   ├── AuthContext.jsx
 │   │   ├── Layout.jsx
 │   │   ├── main.jsx
-│   │   └── requireAuth.jsx
+│   │   └── RequireAuth.jsx
 │   │
 │   ├── .gitignore
 │   ├── index.html
