@@ -18,6 +18,7 @@ import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 import EditPost from './pages/EditPost';
 import Profile from './pages/Profile';
+import Chat from './chat/Chat';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/settings/:page" element={ <SettingsPage /> } />
           <Route path="/edit/:id" element={ <EditPost /> } />
           <Route path="/profile/:id" element={ <Profile /> } />
+          <Route path="/chat" element={ <Chat /> } />
           <Route element={< RequireAuth />}>
             <Route path="/create" element={<Create />} />
             <Route path="/account" element={<Account />} />
