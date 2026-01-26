@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams, useNavigate, redirect } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import { AuthContext } from "../AuthContext";
+import FormattedDateTime from "../components/FormattedDateTime";
 
 function ArchivedPost() {
   const navigate = useNavigate();
@@ -14,44 +15,21 @@ function ArchivedPost() {
 
   const getInfo = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/archived-posts/${id}`, {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/archive/${id}`, {
         method: "GET",
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
       });
       if (!response.ok) throw new Error('Failed to fetch post');
-      const postData = await response.json();
+      const postData = await response.json();   
       setPost(postData);
     }
     catch {
       console.error(error);
-    }
-  }
-
-  const handleDelete = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-      }
-      else {
-        const response = await fetch('http://localhost:3000/api/deletelisting', {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ id }),
-        });
-        if (response.ok) {
-          setSuccess('Post deleted, redirecting to your account');
-          setTimeout(() => {
-            navigate('/account');
-          }, 1500);
-        }
-      }
-    }
-    catch {
-      console.error(error)
+      setError(err.message);
     }
   }
 
@@ -63,8 +41,8 @@ function ArchivedPost() {
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-6">
-        <a className="text-[#4c809a] text-sm font-medium leading-normal" href="/">
-          Home
+        <a className="text-[#4c809a] text-sm font-medium leading-normal" href="/account">
+          Account
         </a>
         <span className="text-[#4c809a] text-sm font-medium leading-normal">/</span>
         <span className="text-[#0d171b] text-sm font-medium leading-normal">
@@ -75,7 +53,7 @@ function ArchivedPost() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
 
-          <Carousel images={post.images} />
+          <Carousel images={post.images || []} />
 
           <div className="mt-8">
             <h1 className="text-[#0d171b] tracking-light text-[32px] font-bold leading-tight">
@@ -106,7 +84,7 @@ function ArchivedPost() {
         {/* Sidebar or related content on right */}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white p-6 rounded-lg border border-slate-200">
-            <h2 className="text-[#0d171b] tracking-light text-[36px] font-bold leading-tight"> ₹{[post.price]}</h2>
+            <h2 className="text-[#0d171b] tracking-light text-[36px] font-bold leading-tight"> ₹{post.price}</h2>
             {/* <div className="mt-4 flex flex-col gap-3">
               <button className="w-full flex items-center justify-center gap-2 min-w-[84px] max-w-[480px] cursor-pointer rounded-lg h-12 px-4 bg-[#13a4ec] text-slate-50 text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#0b8acb] transition-colors">
                 <span className="material-symbols-outlined">chat_bubble</span>
@@ -120,7 +98,7 @@ function ArchivedPost() {
           </div>
 
           <div className="bg-white p-6 rounded-lg border border-slate-200">
-            <h3 className="text-[#0d171b] text-lg font-bold">Add removed on-</h3>
+            <h3 className="text-[#0d171b] text-lg font-bold">Ad removed on <FormattedDateTime value={post.removed_at} /></h3>
 
             <div className="mt-4 flex items-center justify-between">
               <p className="font-bold text-[#0d171b]">{post.seller_name}</p>

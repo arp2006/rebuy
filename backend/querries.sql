@@ -78,7 +78,6 @@ CREATE TABLE messages (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-
 CREATE INDEX idx_conversations_user1 ON conversations(user1);
 CREATE INDEX idx_conversations_user2 ON conversations(user2);
 CREATE INDEX idx_messages_conv_id ON messages(conv_id);

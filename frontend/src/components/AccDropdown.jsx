@@ -3,9 +3,6 @@ import { AuthContext } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function AccDropdown({ u }) {
-  if(!u) {
-    return (<p>dropdow</p>);
-  }
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout } = useContext(AuthContext);
@@ -21,6 +18,11 @@ function AccDropdown({ u }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  
+  if(!u) {
+    return (<p>dropdown</p>);
+  }
 
   const handleLogout = () => {
     logout();

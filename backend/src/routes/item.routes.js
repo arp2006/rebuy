@@ -10,7 +10,8 @@ router.post("/listings", itemController.listings);
 router.post("/search", itemController.search);
 
 router.post("/account-listings", requireAuth, itemController.accountListings);
-router.post("/archive", requireAuth, itemController.archive);
+router.get("/archive", requireAuth, itemController.archive);
+router.get("/archive/:id", requireAuth, itemController.showArchive);
 
 router.get("/items/:id", itemController.getItem);
 router.get("/items/:id/edit", requireAuth, itemController.editItem);

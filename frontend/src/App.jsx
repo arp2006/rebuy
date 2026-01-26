@@ -19,6 +19,8 @@ import NotFound from './pages/NotFound';
 import EditPost from './pages/EditPost';
 import Profile from './pages/Profile';
 import Chat from './chat/Chat';
+import ArchivedItem from './components/ArchivedItem';
+import ArchivedPost from './pages/ArchivedPost';
 
 function App() {
   return (
@@ -42,6 +44,7 @@ function App() {
             <Route path="/create" element={<Create />} />
             <Route path="/account" element={<Account />} />
             <Route path="/success" element={<Success />} />
+            <Route path="/archive/:id" element={<ArchivedPost />} />
           </Route>
           <Route path='*' element={<NotFound />} />
         </Route>

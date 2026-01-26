@@ -40,7 +40,6 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 ## Known Issues
 
 * CSS layout breaks in some sections
-* Archived post details do not display correctly when clicked
 
 ---
 
@@ -51,11 +50,12 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 
 ---
 
-## Future Improvements Implemented
+## Fixes / Improvements Implemented
 
 * Split backend into routes/controllers/services 
 * Improved error handling
 * UI consistency fixes
+* Archived post details do not display correctly when clicked
 
 ## Project Structure
 ```

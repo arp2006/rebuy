@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import Item from "../components/Item";
+import ArchivedItem from "../components/ArchivedItem";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
@@ -25,7 +26,7 @@ function Account() {
       setPosts(postsData);
 
       const response2 = await fetch('http://localhost:3000/api/archive', {
-        method: 'POST',
+        method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -75,7 +76,7 @@ function Account() {
             <p>No posts available.</p>
           ) : (
             oldPosts.map(post => (
-              <Item
+              <ArchivedItem
                 key={post.id}
                 id={post.id}
                 imgLink={post.images && post.images.length > 0 && post.images[0]}

@@ -4,17 +4,17 @@ import { AuthContext } from "./AuthContext";
 
 export default function RequireAuth() {
   const { user, loading } = useContext(AuthContext);
-  console.log("REQUIRE AUTH:", { user, loading });
+  // console.log("REQUIRE AUTH:", { user, loading });
   if (loading) {
-    console.log("REQUIRE AUTH → redirect");
+    // console.log("REQUIRE AUTH → redirect");
     return null; // or a spinner
   }
 
   if (!user) {
-    console.log("REQUIRE AUTH → redirect");
+    // console.log("REQUIRE AUTH → redirect");
     return <Navigate to="/" replace />;
   }
 
-  console.log("REQUIRE AUTH → allow");
+  // console.log("REQUIRE AUTH → allow");
   return <Outlet />;
 }

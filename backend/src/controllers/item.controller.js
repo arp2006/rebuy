@@ -68,6 +68,18 @@ export async function archive(req, res) {
   }
 }
 
+export async function showArchive(req, res) {
+  try {
+    const uid = req.params.id;
+    const id = req.user.sub;
+    const result = await itemService.showArchive(uid, id);
+    res.json(result);
+  } 
+  catch (err) {
+    res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+  }
+}
+
 export async function editItem(req, res) {
   try {
     const item = await itemService.editItem(req.params.id, req.user.sub);

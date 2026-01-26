@@ -147,6 +147,12 @@ export async function archive(uid) {
   return posts.rows;
 }
 
+export async function showArchive(uid, id) {
+  const posts = await db.query('SELECT * FROM archive WHERE id = $1 AND seller_id = $2;', [uid, id]);
+  if (!posts.rows.length) throw { status: 404, message: "Item not found" };
+  return posts.rows[0];
+}
+
 export async function editItem(id, uid) {
   const result = await db.query(
     `
