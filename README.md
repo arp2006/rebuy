@@ -40,6 +40,7 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 ## Known Issues
 
 * CSS layout breaks in some sections
+* .ENV file nnot loading before config files
 
 ---
 
