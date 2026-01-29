@@ -18,8 +18,7 @@ import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 import EditPost from './pages/EditPost';
 import Profile from './pages/Profile';
-import Chat from './chat/Chat';
-import ArchivedItem from './components/ArchivedItem';
+import Chat from './pages/Chat';
 import ArchivedPost from './pages/ArchivedPost';
 
 function App() {
