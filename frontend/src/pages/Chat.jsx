@@ -15,14 +15,12 @@ export default function ChatLayout() {
       />
 
       <div className="flex h-full">
-        {/* Conversation List */}
         <aside
           className={`${showChat ? "hidden md:flex" : "flex"} w-full md:w-[350px] lg:w-[400px] flex-col border-r border-slate-200 bg-white`}
         >
           <ConversationList onSelect={() => setShowChat(true)} />
         </aside>
 
-        {/* Chat Detail */}
         <section
           className={`${showChat ? "flex" : "hidden md:flex"} flex-1 flex-col bg-white`}
         >

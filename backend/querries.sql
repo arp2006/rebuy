@@ -63,22 +63,58 @@ CREATE TABLE archive (
 CREATE TABLE conversations (
   id SERIAL PRIMARY KEY,
   item_id INT NOT NULL REFERENCES items(id) ON DELETE CASCADE,
-  user1 INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  user2 INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  buyer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  seller_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  CHECK (user1 <> user2),
-  UNIQUE (item_id, user1, user2)
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  CHECK (buyer_id <> seller_id),
+  UNIQUE (item_id, buyer_id, seller_id)
 );
 
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
   conv_id INT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
   sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  msg TEXT NOT NULL CHECK (length(msg) <= 2000),
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  msg TEXT NOT NULL CHECK (length(msg) <= 500),
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  read_at TIMESTAMPTZ
 );
 
-CREATE INDEX idx_conversations_user1 ON conversations(user1);
-CREATE INDEX idx_conversations_user2 ON conversations(user2);
-CREATE INDEX idx_messages_conv_id ON messages(conv_id);
-CREATE INDEX idx_messages_created_at ON messages(created_at);
+ALTER TABLE conversations
+ADD COLUMN last_message_id INT REFERENCES messages(id);
+
+ALTER TABLE conversations
+ALTER COLUMN last_message_id DROP NOT NULL;
+
+CREATE OR REPLACE FUNCTION update_conversation_on_message()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE conversations
+  SET
+    updated_at = CURRENT_TIMESTAMP,
+    last_message_id = NEW.id
+  WHERE id = NEW.conv_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_conversation
+AFTER INSERT ON messages
+FOR EACH ROW
+EXECUTE FUNCTION update_conversation_on_message();
+
+
+CREATE INDEX idx_conv_buyer ON conversations(buyer_id);
+CREATE INDEX idx_conv_seller ON conversations(seller_id);
+CREATE INDEX idx_msg_conv_time ON messages(conv_id, created_at DESC);
+
+-- test query for convo list
+INSERT INTO conversations
+  (item_id, buyer_id, seller_id, created_at, updated_at, last_message_id)
+VALUES
+  (15, 1, 5, '2026-01-20 10:05', '2026-01-30 09:12', NULL),
+  (2, 7, 1, '2026-01-18 14:40', '2026-01-29 21:55', NULL),
+  (14, 1, 9, '2026-01-25 16:10', '2026-01-30 08:30', NULL),
+  (8, 4, 1, '2026-01-10 11:00', '2026-01-28 19:02', NULL),
+  (17, 1, 6, '2026-01-28 13:45', '2026-01-30 10:01', NULL);
+  

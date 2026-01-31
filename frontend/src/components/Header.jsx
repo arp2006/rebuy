@@ -79,6 +79,7 @@ function Header() {
         {loading ? null : user ? (
           <>
             <Link to="/create" className="text-[#0d171b] text-sm font-medium leading-normal">Sell an Item</Link>
+            <Link to="/chat" className="text-[#0d171b] text-sm font-medium leading-normal">Chat</Link>
             <AccDropdown u={userInfo} />
           </>
         ) : (

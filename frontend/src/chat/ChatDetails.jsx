@@ -8,7 +8,7 @@ export default function ChatDetails({ onBack }) {
         <div className="flex items-center gap-3">
           <button onClick={onBack} className="md:hidden text-slate-500">←</button>
           <div className="min-w-0">
-            <p className="font-bold text-lg truncate">Ajit Pawar</p>
+            <p className="font-bold text-lg truncate">Hacker</p>
             <p className="text-xs text-green-500 flex items-center gap-1">
               Online 
             </p>
