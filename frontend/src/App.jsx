@@ -38,9 +38,9 @@ function App() {
           <Route path="/settings/:page" element={ <SettingsPage /> } />
           <Route path="/edit/:id" element={ <EditPost /> } />
           <Route path="/profile/:id" element={ <Profile /> } />
-          <Route path="/chat" element={ <Chat /> } />
           <Route element={< RequireAuth />}>
             <Route path="/create" element={<Create />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/account" element={<Account />} />
             <Route path="/success" element={<Success />} />
             <Route path="/archive/:id" element={<ArchivedPost />} />

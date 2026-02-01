@@ -6,30 +6,29 @@ export default function ConversationList({ onSelect }) {
   const [loading, setLoading] = useState(false);
   const [conversationType, setConversationType] = useState("buying");
 
-  useEffect(() => {
-    async function fetchConversations() {
-      setLoading(true);
+  async function fetchConversations() {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:3000/api/chats/${conversationType}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3000/api/chats/${conversationType}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (!res.ok) throw new Error("Failed to fetch chats");
 
-        if (!res.ok) throw new Error("Failed to fetch chats");
-
-        const data = await res.json();
-        setConversations(data);
-      } catch (err) {
-        console.error("Failed to load conversations", err);
-        setConversations([]);
-      } finally {
-        setLoading(false);
-      }
+      const data = await res.json();
+      setConversations(data);
+    } catch (err) {
+      console.error("Failed to load conversations", err);
+      setConversations([]);
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchConversations();
   }, [conversationType]);
 
@@ -82,7 +81,9 @@ export default function ConversationList({ onSelect }) {
           <ConversationItem
             key={chat.id}
             data={chat}
-            onClick={() => onSelect(chat.id)}
+            onClick={() => {
+              onSelect(chat.id, conversationType)
+            }}
           />
         ))}
       </div>

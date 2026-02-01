@@ -26,23 +26,24 @@ export async function getChats(userId, type) {
 }
 
 export async function getMessages(convId, userId) {
-  const convRes = await db.query(
-    `SELECT 1
+  convId = Number(convId);
+  userId = Number(userId);
+
+  const convCheck = `
+    SELECT 1
     FROM conversations
     WHERE id = $1
-      AND (buyer_id = $2 OR seller_id = $2);`
-    , [convId, userId]);
+      AND (buyer_id = $2 OR seller_id = $2)
+  `;
+
+  const convRes = await db.query(convCheck, [convId, userId]);
 
   if (convRes.rowCount === 0) {
     throw new Error("FORBIDDEN");
   }
+
   const query = `
-    SELECT
-      id,
-      sender_id,
-      msg,
-      created_at,
-      read_at
+    SELECT id, sender_id, msg, created_at, read_at
     FROM messages
     WHERE conv_id = $1
     ORDER BY created_at ASC

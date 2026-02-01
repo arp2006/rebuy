@@ -1,13 +1,43 @@
+import { useContext } from "react";
 import MessageBubble from "./MessageBubble";
-export default function MessageList() {
-  return (
-    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50">
-      <div className="grid justify-items-center mx-[12rem] bg-gray-200 rounded-sm"> 
-        <p className="text-[0.9rem] text-slate-500 ">Monday</p>
+import { AuthContext } from "../AuthContext";
+
+export default function MessageList({ messages, loading, type }) {
+  const { user } = useContext(AuthContext);
+  
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-sm text-slate-500">
+        Loading messages…
       </div>
-      <MessageBubble text="Is the Vintage Canon AE-1 still available?" />
-      <MessageBubble text="Yes, it is." mine />
-      <p className="grid justify-items-end text-[0.75rem] text-slate-500">seen 6s ago</p>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-slate-50">
+      {messages.length === 0 && (
+        <p className="text-center text-sm text-slate-500">
+          No messages yet
+        </p>
+      )}
+      
+      {type==="selling" ?
+        messages.map(msg => (
+          <MessageBubble
+            key={msg.id}
+            text={msg.msg}
+            mine={msg.sender_id === user.id}
+          /> 
+        ))
+      :
+        messages.map(msg => (
+          <MessageBubble
+            key={msg.id}
+            text={msg.msg}
+            mine={msg.sender_id !== user.id}
+          /> 
+        ))
+      }
     </div>
   );
 }

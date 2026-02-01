@@ -17,15 +17,22 @@ export async function getChats(req, res) {
 
 export async function getMessages(req, res) {
   try {
-    const userId = req.user.sub;
-    const { convId } = req.params;
+    const userId = Number(req.user.sub);
+    const convId = Number(req.params.conversationId);
+
     const messages = await chatService.getMessages(convId, userId);
     res.json(messages);
   } catch (err) {
-    console.error(err);
+    console.error("GET MESSAGES ERROR:", err); // 👈 IMPORTANT
+
     if (err.message === "FORBIDDEN") {
       return res.status(403).json({ error: "Not authorized" });
     }
-    res.status(500).json({ error: "Internal server error" });
+
+    res.status(500).json({
+      error: "Internal server error",
+      detail: err.message, // temporary
+    });
   }
 }
+
