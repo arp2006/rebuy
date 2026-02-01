@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ConversationItem from "./ConversationItem";
 
-export default function ConversationList({ onSelect }) {
+export default function ConversationList({ onSelect, activeId }) {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [conversationType, setConversationType] = useState("buying");
@@ -20,10 +20,13 @@ export default function ConversationList({ onSelect }) {
 
       const data = await res.json();
       setConversations(data);
-    } catch (err) {
+      
+    } 
+    catch (err) {
       console.error("Failed to load conversations", err);
       setConversations([]);
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   }
@@ -80,9 +83,11 @@ export default function ConversationList({ onSelect }) {
         {!loading && conversations.map(chat => (
           <ConversationItem
             key={chat.id}
+            id={chat.id}
+            activeId={activeId}
             data={chat}
             onClick={() => {
-              onSelect(chat.id, conversationType)
+              onSelect(chat.id, conversationType, chat.name, chat.item_id)
             }}
           />
         ))}

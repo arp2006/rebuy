@@ -1,11 +1,29 @@
 import { useEffect, useState } from "react";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
+import { useNavigate } from "react-router-dom";
 
-export default function ChatDetails({ chatId, onBack, type }) {
+export default function ChatDetails({ chatId, onBack, type, name, item }) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [postInfo, setPostInfo] = useState({});
+  
+  async function getInfo() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/items/${item}?summary=true`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Failed to fetch post');
+      const pInfo = await response.json();
+      setPostInfo(pInfo);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+  
   async function fetchMessages() {
     setLoading(true);
     try {
@@ -31,20 +49,34 @@ export default function ChatDetails({ chatId, onBack, type }) {
   useEffect(() => {
     if (!chatId) return;
     fetchMessages();
+    getInfo();
   }, [chatId]);
 
   return (
     <>
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 sticky top-0 bg-white z-10">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="md:hidden text-slate-500">
-            ←
-          </button>
+          <button onClick={onBack} className="md:hidden text-slate-500">←</button>
           <div className="min-w-0">
-            <p className="font-bold text-lg truncate">Chat</p>
-            <p className="text-xs text-green-500">Online</p>
+            <p className="font-bold text-lg truncate">{name}</p>
+            <p className="text-xs text-green-500 flex items-center gap-1">
+              Online 
+            </p>
           </div>
+        </div>
+
+        {/* Product Info */}
+        <div className="flex items-center gap-3 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+          <div className="hidden lg:block">
+            <p className="text-xs font-bold truncate">{postInfo.title}</p>
+            <p className="text-[10px] text-slate-500">{postInfo.price}</p>
+          </div>
+          <button 
+            className="bg-[#3498DB] text-white text-[10px] h-[2rem] font-bold px-3 py-1 rounded-lg cursor-pointer hover:bg-[#0a6bab] transition"
+            onClick={() => navigate(`/product/${item}`)}
+          >
+            Manage
+          </button>
         </div>
       </div>
 

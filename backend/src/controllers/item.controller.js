@@ -21,8 +21,12 @@ export async function listings(req, res) {
 
 export async function getItem(req, res) {
   try {
-    const result = await itemService.getItem(req.params.id);
-    res.json(result);
+    const summary = req.query.summary === "true";
+    const item = await itemService.getItem(
+      Number(req.params.id),
+      summary
+    );
+    res.json(item);
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
   }

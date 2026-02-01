@@ -37,17 +37,35 @@ export async function listings(filters, userId) {
   return res.rows;
 }
 
-export async function getItem(id) {
-  const res = await db.query(
-    `
-    SELECT i.*, ud.name AS seller_name
-    FROM items i
-    JOIN user_data ud ON i.seller_id = ud.id
-    WHERE i.id = $1;
-    `,
-    [id]
-  );
-  if (!res.rows.length) throw { status: 404, message: "Item not found" };
+export async function getItem(id, summary = false) {
+  let query;
+
+  if (summary) {
+    query = `
+      SELECT
+        i.id,
+        i.title,
+        i.price
+      FROM items i
+      WHERE i.id = $1;
+    `;
+  } else {
+    query = `
+      SELECT
+        i.*,
+        ud.name AS seller_name
+      FROM items i
+      JOIN user_data ud ON i.seller_id = ud.id
+      WHERE i.id = $1;
+    `;
+  }
+
+  const res = await db.query(query, [id]);
+
+  if (!res.rows.length) {
+    throw { status: 404, message: "Item not found" };
+  }
+
   return res.rows[0];
 }
 

@@ -1,10 +1,12 @@
-export default function ConversationItem({ onClick, active, data }) {
+export default function ConversationItem({ onClick, id, activeId, data }) {
+  let active = activeId === id;
+  (activeId === id) ? active = true : active = false;
   return (
     <div
       onClick={onClick}
       className={`flex gap-4 px-4 py-3 cursor-pointer border-b border-slate-200
         hover:bg-slate-50
-        ${active ? "bg-blue-50 border-r-4 border-blue-500" : ""}
+        ${active ? "border-x" : ""}
       `}
     >
       <div className="flex-1">

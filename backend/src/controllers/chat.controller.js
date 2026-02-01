@@ -36,3 +36,30 @@ export async function getMessages(req, res) {
   }
 }
 
+export async function sendMessage(req, res) {
+  try {
+    const userId = Number(req.user.sub);
+    const { convId, msg } = req.body;
+
+    if (!convId || !msg?.trim()) {
+      return res.status(400).json({ error: "Invalid input" });
+    }
+
+    const message = await chatService.sendMessage(
+      Number(convId),
+      userId,
+      msg
+    );
+
+    res.status(201).json(message);
+  } 
+  catch (err) {
+    console.error("SEND MESSAGE ERROR:", err);
+
+    if (err.message === "FORBIDDEN") {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

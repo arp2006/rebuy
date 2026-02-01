@@ -14,7 +14,7 @@ function Product() {
 
   const getInfo = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/items/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/items/${id}?summary=false`, {
         method: "GET",
         headers: { 'Content-Type': 'application/json' },
       });

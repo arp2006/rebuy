@@ -15,7 +15,8 @@ export async function getChats(userId, type) {
     SELECT
       c.id,
       u.name,
-      c.updated_at
+      c.updated_at,
+      c.item_id
     FROM conversations c
     ${userJoin}
     WHERE ${whereClause}
@@ -51,4 +52,29 @@ export async function getMessages(convId, userId) {
 
   const { rows } = await db.query(query, [convId]);
   return rows;
+}
+
+export async function sendMessage(convId, userId, msg) {
+  const check = `
+    SELECT 1
+    FROM conversations
+    WHERE id = $1
+      AND (buyer_id = $2 OR seller_id = $2)
+  `;
+
+  const allowed = await db.query(check, [convId, userId]);
+
+  if (allowed.rowCount === 0) {
+    throw new Error("FORBIDDEN");
+  }
+
+  const insert = `
+    INSERT INTO messages (conv_id, sender_id, msg)
+    VALUES ($1, $2, $3)
+    RETURNING id, sender_id, msg, created_at, read_at
+  `;
+
+  const { rows } = await db.query(insert, [convId, userId, msg]);
+
+  return rows[0];
 }
