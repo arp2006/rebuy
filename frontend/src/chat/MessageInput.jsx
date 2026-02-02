@@ -1,23 +1,54 @@
-export default function MessageInput() {
-  return (
-    <div className="p-2 border-t border-slate-200 bg-white">
-      <div className="flex gap-2">
-        <textarea
-          className="flex-1 border border-slate-200 rounded-xl px-4 py-2 text-sm resize-none"
-          placeholder="Write a message. 500 characters max"
-        />
+import { useState, useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="30" 
-          height="64"
-          fill="#3498DB" viewBox="0 0 24 24"
-          transform="scale(1,-1)"
-          className="cursor-pointer"
-        >
-          <path d="m21.41 11.09-18-8a1 1 0 0 0-1.09.19c-.29.28-.39.7-.25 1.08l2.87 7.65-2.87 7.65c-.14.38-.04.8.25 1.08a1 1 0 0 0 1.1.18l18-8a.998.998 0 0 0 0-1.82ZM4.78 18.12l1.23-3.27V15l6-3-6-3v.15L4.78 5.88 18.54 12z"></path>
-        </svg>
-      </div>
-    </div>
+export default function MessageInput({ chatId, onMessageSent }) {
+  const [text, setText] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!text.trim()) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3000/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          convId: chatId,
+          msg: text,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to send");
+
+      const savedMessage = await res.json();
+      onMessageSent(savedMessage); // 👈 push into UI
+      setText("");
+    } catch (err) {
+      console.error("Send failed", err);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="border-t border-slate-200 p-3 flex gap-2"
+    >
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none"
+        placeholder="Type a message…"
+      />
+      <button
+        type="submit"
+        className="bg-[#3498DB] text-white px-4 rounded-lg text-sm font-medium"
+      >
+        Send
+      </button>
+    </form>
   );
 }

@@ -2,9 +2,9 @@ import { useContext } from "react";
 import MessageBubble from "./MessageBubble";
 import { AuthContext } from "../AuthContext";
 
-export default function MessageList({ messages, loading, type }) {
+export default function MessageList({ messages, loading }) {
   const { user } = useContext(AuthContext);
-  
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center text-sm text-slate-500">
@@ -21,23 +21,13 @@ export default function MessageList({ messages, loading, type }) {
         </p>
       )}
       
-      {type==="selling" ?
-        messages.map(msg => (
-          <MessageBubble
-            key={msg.id}
-            text={msg.msg}
-            mine={msg.sender_id === user.id}
-          /> 
-        ))
-      :
-        messages.map(msg => (
-          <MessageBubble
-            key={msg.id}
-            text={msg.msg}
-            mine={msg.sender_id !== user.id}
-          /> 
-        ))
-      }
+      {messages.map(msg => (
+      <MessageBubble
+        key={msg.id}
+        text={msg.msg}
+        mine={msg.sender_id === user.id}
+      />
+      ))}
     </div>
   );
 }
