@@ -40,7 +40,6 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 ## Known Issues
 
 * CSS layout breaks in some sections
-* .ENV file nnot loading before config files
 
 ---
 
@@ -60,6 +59,7 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * Improved error handling
 * UI consistency fixes
 * Archived post details do not display correctly when clicked
+* .ENV file nnot loading before config files
 
 ## Project Structure
 ```
