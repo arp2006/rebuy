@@ -24,6 +24,8 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * bcrypt
 * Cloudinary
 * CORS
+* .ENV
+* Socket.io (in progress)
 
 ---
 
