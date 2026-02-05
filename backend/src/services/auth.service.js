@@ -1,6 +1,7 @@
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 
 export async function login({ email, password }) {
   if (!email || !password) {
@@ -84,6 +85,12 @@ export async function register(data) {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+    try {
+      await sendWelcomeEmail(email, name);
+    } 
+    catch (err) {
+      throw err;
+    }
 
     return { user: { id: result.rows[0].id }, token };
   } catch (err) {
