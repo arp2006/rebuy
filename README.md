@@ -36,6 +36,7 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * User profiles and settings
 * Post creation, editing, and browsing
 * Responsive UI with Tailwind CSS
+* Welcome Email
 
 ---
 
@@ -60,10 +61,11 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * Improved error handling
 * UI consistency fixes
 * Archived post details do not display correctly when clicked
-* .ENV file nnot loading before config files
+* .ENV file not loading before config files
 * Welcome Email
 
 ## Project Structure
+Yet to be updated
 ```
 project-root/
 │
