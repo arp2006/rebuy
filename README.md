@@ -51,7 +51,6 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * Live chat implementation
 * Notifications for chat
 * RateLimiter
-* Welcome Email
 
 ---
 
@@ -62,6 +61,7 @@ The app features **JWT-based authentication**, **protected routes**, and a **mod
 * UI consistency fixes
 * Archived post details do not display correctly when clicked
 * .ENV file nnot loading before config files
+* Welcome Email
 
 ## Project Structure
 ```
